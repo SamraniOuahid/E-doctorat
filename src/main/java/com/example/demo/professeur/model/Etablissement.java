@@ -1,9 +1,13 @@
 package com.example.demo.professeur.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "professeur_etablissement")
+@Data
+@NoArgsConstructor
 public class Etablissement {
 
     @Id
@@ -12,20 +16,4 @@ public class Etablissement {
 
     @Column(name = "nomEtablissement", nullable = false, length = 255)
     private String nomEtablissement;
-
-    public String getIdEtablissement() {
-        return idEtablissement;
-    }
-
-    public void setIdEtablissement(String idEtablissement) {
-        this.idEtablissement = idEtablissement;
-    }
-
-    public String getNomEtablissement() {
-        return nomEtablissement;
-    }
-
-    public void setNomEtablissement(String nomEtablissement) {
-        this.nomEtablissement = nomEtablissement;
-    }
 }

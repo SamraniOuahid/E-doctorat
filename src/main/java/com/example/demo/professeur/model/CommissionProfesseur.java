@@ -1,9 +1,13 @@
 package com.example.demo.professeur.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "professeur_commission_professeurs")
+@Data
+@NoArgsConstructor
 public class CommissionProfesseur {
 
     @Id
@@ -15,28 +19,4 @@ public class CommissionProfesseur {
 
     @Column(name = "professeur_id", nullable = false)
     private Long professeurId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCommissionId() {
-        return commissionId;
-    }
-
-    public void setCommissionId(Long commissionId) {
-        this.commissionId = commissionId;
-    }
-
-    public Long getProfesseurId() {
-        return professeurId;
-    }
-
-    public void setProfesseurId(Long professeurId) {
-        this.professeurId = professeurId;
-    }
 }
