@@ -1,9 +1,13 @@
 package com.example.demo.professeur.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "professeur_ced")
+@Data
+@NoArgsConstructor
 public class Ced {
 
     @Id
@@ -24,52 +28,4 @@ public class Ced {
 
     @Column(name = "directeur_id")
     private Long directeurId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getPathImage() {
-        return pathImage;
-    }
-
-    public void setPathImage(String pathImage) {
-        this.pathImage = pathImage;
-    }
-
-    public String getInitiale() {
-        return initiale;
-    }
-
-    public void setInitiale(String initiale) {
-        this.initiale = initiale;
-    }
-
-    public String getTitre() {
-        return titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public Long getDirecteurId() {
-        return directeurId;
-    }
-
-    public void setDirecteurId(Long directeurId) {
-        this.directeurId = directeurId;
-    }
 }
