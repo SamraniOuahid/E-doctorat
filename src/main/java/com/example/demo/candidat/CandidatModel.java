@@ -3,7 +3,10 @@ package com.example.demo.candidat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 @lombok.Getter
 @lombok.Setter
 @Data
@@ -39,6 +42,8 @@ public class CandidatModel {
     private int userId;
     private int fonctionaire;
 
+    @OneToMany
+    private List<NotificationModel> notifications = new ArrayList<>();
 
 
 }
