@@ -44,6 +44,6 @@ public class CandidatModel {
 
     @OneToMany
     private List<NotificationModel> notifications = new ArrayList<>();
-
-
+    // Un candidat peux avoir plusieurs diplome
+    private List<CandidatDiplome> diplomes = new ArrayList<>();
 }
