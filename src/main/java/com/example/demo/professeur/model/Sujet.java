@@ -23,19 +23,29 @@ public class Sujet {
     @Column(nullable = false)
     private boolean publier;
 
-    //coDirecteur_id → professeur_professeur.id
+    // coDirecteur_id -> professeur_professeur.id (nullable)
     @ManyToOne
     @JoinColumn(
-            name = "coDirecteur_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+            name = "coDirecteur_id",
+            referencedColumnName = "id"
+    )
     private ProfesseurModel coDirecteur;
 
-    //formationDoctorale_id → professeur_formationdoctorale.id
+    // formationDoctorale_id -> professeur_formationdoctorale.id
     @ManyToOne
-    @JoinColumn( name = "formationDoctorale_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(
+            name = "formationDoctorale_id",
+            referencedColumnName = "id",
+            nullable = false
+    )
     private FormationDoctorale formationDoctorale;
 
-    //professeur_id → professeur_professeur.id
+    // professeur_id -> professeur_professeur.id
     @ManyToOne
-    @JoinColumn( name = "professeur_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(
+            name = "professeur_id",
+            referencedColumnName = "id",
+            nullable = false
+    )
     private ProfesseurModel professeur;
 }

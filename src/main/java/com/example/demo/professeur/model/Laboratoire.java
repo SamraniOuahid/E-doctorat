@@ -14,30 +14,34 @@ public class Laboratoire {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nomLaboratoire", length = 255, nullable = false)
+    @Column(length = 255, nullable = false)
     private String nomLaboratoire;
 
-    @Column(name = "description", columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @Column(name = "pathImage", length = 100)
+    @Column(length = 100)
     private String pathImage;
 
-    @Column(name = "initial", length = 255)
+    @Column(length = 255)
     private String initial;
 
     // ced_id -> professeur_ced.id
     @ManyToOne
-    @JoinColumn(name = "ced_id", referencedColumnName = "id")
+    @JoinColumn(name = "ced_id", referencedColumnName = "id", nullable = false)
     private Ced ced;
 
     // directeur_id -> professeur_professeur.id
     @ManyToOne
-    @JoinColumn(name = "directeur_id", referencedColumnName = "id")
+    @JoinColumn(name = "directeur_id", referencedColumnName = "id", nullable = false)
     private ProfesseurModel directeur;
 
-    // etablissement_id -> professeur_etablissement.id
+    // etablissement_id -> professeur_etablissement.idEtablissement
     @ManyToOne
-    @JoinColumn(name = "etablissement_id", referencedColumnName = "id")
+    @JoinColumn(
+            name = "etablissement_id",
+            referencedColumnName = "idEtablissement",
+            nullable = false
+    )
     private Etablissement etablissement;
 }

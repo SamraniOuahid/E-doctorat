@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Entity
 @Table(name = "professeur_formationdoctorale")
 @Data
@@ -14,26 +16,32 @@ public class FormationDoctorale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "pathImage", length = 100)
+    @Column(length = 100)
     private String pathImage;
 
-    @Column(name = "initiale", length = 255)
+    @Column(length = 255)
     private String initiale;
 
-    @Column(name = "titre", length = 255, nullable = false)
+    @Column(length = 255, nullable = false)
     private String titre;
 
     @Column(name = "axeDeRecherche", columnDefinition = "LONGTEXT")
     private String axeDeRecherche;
 
     @Column(name = "dateAccreditation")
-    private java.sql.Date dateAccreditation;
+    private Date dateAccreditation;
 
+    // ced_id -> professeur_ced.id
     @ManyToOne
-    @JoinColumn(name = "ced_id", referencedColumnName = "id")
+    @JoinColumn(name = "ced_id", referencedColumnName = "id", nullable = false)
     private Ced ced;
 
+    // etablissement_id -> professeur_etablissement.idEtablissement
     @ManyToOne
-    @JoinColumn(name = "etablissement_id", referencedColumnName = "id")
+    @JoinColumn(
+            name = "etablissement_id",
+            referencedColumnName = "idEtablissement",
+            nullable = false
+    )
     private Etablissement etablissement;
 }
