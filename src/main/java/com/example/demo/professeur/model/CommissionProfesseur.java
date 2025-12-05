@@ -14,9 +14,13 @@ public class CommissionProfesseur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "commission_id", nullable = false)
-    private Long commissionId;
+    // commission_id -> professeur_commission.id
+    @ManyToOne
+    @JoinColumn(name = "commission_id", referencedColumnName = "id", nullable = false)
+    private Commission commission;
 
-    @Column(name = "professeur_id", nullable = false)
-    private Long professeurId;
+    // professeur_id -> professeur_professeur.id
+    @ManyToOne
+    @JoinColumn(name = "professeur_id", referencedColumnName = "id", nullable = false)
+    private ProfesseurModel professeur;
 }

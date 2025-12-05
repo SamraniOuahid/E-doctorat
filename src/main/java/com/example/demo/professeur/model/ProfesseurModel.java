@@ -30,24 +30,21 @@ public class ProfesseurModel {
     @Column(nullable = false)
     private int nombreProposer;
 
-    //etablissement_id
+    // etablissement_id -> professeur_etablissement.idEtablissement
     @ManyToOne
     @JoinColumn(
             name = "etablissement_id",
             referencedColumnName = "idEtablissement",
-            nullable = false,
-            foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT)
+            nullable = false
     )
     private Etablissement etablissement;
 
-    //labo_id
+    // labo_id -> professeur_laboratoire.id  (nullable)
     @ManyToOne
-    @JoinColumn( name = "labo_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "labo_id", referencedColumnName = "id")
     private Laboratoire laboratoire;
 
-    //user_id
-    @ManyToOne
-    @JoinColumn( name = "user_id", referencedColumnName = "id", nullable = false)
-    private long user;
-    
+    // user_id -> auth_user.id  (we keep only the FK, no relation entity)
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 }

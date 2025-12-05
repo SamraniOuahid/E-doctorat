@@ -14,6 +14,6 @@ public class Etablissement {
     @Column(name = "idEtablissement", length = 10)
     private String idEtablissement;
 
-    @Column(name = "nomEtablissement", nullable = false, length = 255)
+    @Column(name = "nomEtablissement", length = 255, nullable = false)
     private String nomEtablissement;
 }

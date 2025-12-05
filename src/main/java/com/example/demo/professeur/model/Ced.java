@@ -14,18 +14,20 @@ public class Ced {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description", columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    @Column(name = "pathImage", length = 100)
+    @Column(length = 100)
     private String pathImage;
 
-    @Column(name = "initiale", length = 255)
+    @Column(length = 255)
     private String initiale;
 
-    @Column(name = "titre", nullable = false, length = 255)
+    @Column(length = 255, nullable = false)
     private String titre;
 
-    @Column(name = "directeur_id")
-    private Long directeurId;
+    // directeur_id -> professeur_professeur.id (nullable)
+    @ManyToOne
+    @JoinColumn(name = "directeur_id", referencedColumnName = "id")
+    private ProfesseurModel directeur;
 }
