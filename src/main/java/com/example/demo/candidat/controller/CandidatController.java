@@ -1,9 +1,10 @@
-package com.example.demo.candidat;
+package com.example.demo.candidat.controller;
 
+import com.example.demo.candidat.CandidatService;
+import com.example.demo.candidat.model.Candidat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -14,21 +15,21 @@ public class CandidatController {
     private CandidatService candidatService;
 
     @GetMapping
-    public List<CandidatModel> getAll() {
+    public List<Candidat> getAll() {
         return candidatService.getAll();
     }
 
     @GetMapping("/{id}")
-    public CandidatModel getById(@PathVariable int id) {
+    public Candidat getById(@PathVariable int id) {
         return candidatService.getById(id);
     }
     @PostMapping
-    public CandidatModel create(@RequestBody CandidatModel candidat) {
+    public Candidat create(@RequestBody Candidat candidat) {
         return candidatService.create(candidat);
 
     }
     @PutMapping("/{id}")
-    public CandidatModel update(@PathVariable int id,  @RequestBody CandidatModel candidat) {
+    public Candidat update(@PathVariable int id, @RequestBody Candidat candidat) {
         return candidatService.update(id, candidat);
     }
 
@@ -38,7 +39,7 @@ public class CandidatController {
 //
 //    }
     @DeleteMapping("/{id}")
-    public List<CandidatModel> delete(@PathVariable int id) {
+    public List<Candidat> delete(@PathVariable int id) {
         return candidatService.deleteById(id);
     }
 

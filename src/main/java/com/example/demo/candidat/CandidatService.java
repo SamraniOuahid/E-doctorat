@@ -1,10 +1,10 @@
 package com.example.demo.candidat;
 
+import com.example.demo.candidat.model.Candidat;
+import com.example.demo.candidat.repositrory.CandidatRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CandidatService {
@@ -14,20 +14,20 @@ public class CandidatService {
         this.candidatRepository = candidatRepository;
     }
 
-    public List<CandidatModel> getAll() {
+    public List<Candidat> getAll() {
         return candidatRepository.findAll();
     }
 
-    public CandidatModel getById(int id) {
+    public Candidat getById(int id) {
         return candidatRepository.findById(id).orElse(null);
     }
 
-    public CandidatModel create(CandidatModel candidat) {
+    public Candidat create(Candidat candidat) {
         // id est généré automatiquement par JPA
         return candidatRepository.save(candidat);
     }
 
-    public List<CandidatModel> deleteById(int id) {
+    public List<Candidat> deleteById(int id) {
         if (!candidatRepository.existsById(id)) {
             return candidatRepository.findAll(); // ou null si tu préfères
         }
@@ -35,7 +35,7 @@ public class CandidatService {
         return candidatRepository.findAll();
     }
 
-    public CandidatModel update(int id, CandidatModel newCandidat) {
+    public Candidat update(int id, Candidat newCandidat) {
         return candidatRepository.findById(id)
                 .map(old -> {
                     newCandidat.setId(id);
