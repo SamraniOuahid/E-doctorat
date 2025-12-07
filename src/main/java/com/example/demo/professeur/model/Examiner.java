@@ -1,5 +1,6 @@
 package com.example.demo.professeur.model;
 
+import com.example.demo.candidat.CandidatModel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,27 +15,33 @@ public class Examiner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "decision", length = 255)
+    @Column(length = 255)
     private String decision;
 
-    @Column(name = "noteDossier", nullable = false)
-    private Float noteDossier;
+    @Column(nullable = false)
+    private float noteDossier;
 
-    @Column(name = "noteEntretien", nullable = false)
-    private Integer noteEntretien;
+    @Column(nullable = false)
+    private int noteEntretien;
 
-    @Column(name = "publier", nullable = false)
-    private Boolean publier;
+    @Column(nullable = false)
+    private boolean publier;
 
-    @Column(name = "valider", nullable = false)
-    private Boolean valider;
+    @Column(nullable = false)
+    private boolean valider;
 
-    @Column(name = "commission_id", nullable = false)
-    private Long commissionId;
+    // commission_id -> professeur_commission.id
+    @ManyToOne
+    @JoinColumn(name = "commission_id", referencedColumnName = "id", nullable = false)
+    private Commission commission;
 
-    @Column(name = "sujet_id", nullable = false)
-    private Long sujetId;
+    // sujet_id -> professeur_sujet.id
+    @ManyToOne
+    @JoinColumn(name = "sujet_id", referencedColumnName = "id", nullable = false)
+    private Sujet sujet;
 
-    @Column(name = "candidat_id", nullable = false)
-    private Long candidatId;
+    // candidat_id -> candidat_candidat.id
+    @ManyToOne
+    @JoinColumn(name = "candidat_id", referencedColumnName = "id", nullable = false)
+    private CandidatModel candidat;
 }

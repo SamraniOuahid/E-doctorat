@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.time.LocalTime;
 
 @Entity
@@ -18,14 +18,16 @@ public class Commission {
     private Long id;
 
     @Column(name = "dateCommission", nullable = false)
-    private LocalDate dateCommission;
+    private Date dateCommission;
 
-    @Column(name = "lieu", nullable = false, length = 255)
+    @Column(length = 255, nullable = false)
     private String lieu;
 
     @Column(name = "heure", nullable = false)
     private LocalTime heure;
 
-    @Column(name = "labo_id", nullable = false)
-    private Long laboratoireId;
+    // labo_id -> professeur_laboratoire.id
+    @ManyToOne
+    @JoinColumn(name = "labo_id", referencedColumnName = "id", nullable = false)
+    private Laboratoire laboratoire;
 }
