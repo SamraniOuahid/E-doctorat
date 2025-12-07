@@ -1,6 +1,6 @@
 package com.example.demo.professeur.model;
 
-import com.example.demo.candidat.CandidatModel;
+import com.example.demo.candidat.model.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,5 +43,5 @@ public class Examiner {
     // candidat_id -> candidat_candidat.id
     @ManyToOne
     @JoinColumn(name = "candidat_id", referencedColumnName = "id", nullable = false)
-    private CandidatModel candidat;
+    private Candidat candidat;
 }

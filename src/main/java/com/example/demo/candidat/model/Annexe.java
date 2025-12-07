@@ -1,26 +1,24 @@
-package com.example.demo.candidat;
+package com.example.demo.candidat.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@lombok.Getter
-@lombok.Setter
+@Entity
+@Table(name = "candidat_annexe")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "CandidatAnnexe")
-@Entity
-public class CandidatAnnexe {
+public class Annexe {
+
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
     private String typeAnnexe;
     private String titre;
     private String pathFile;
-    private long diplomeId;
 
     @ManyToOne
-    private CandidatDiplome diplome;
+    @JoinColumn(name = "diplome_id", nullable = false)
+    private Diplome diplome;
 }

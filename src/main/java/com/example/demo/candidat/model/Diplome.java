@@ -1,39 +1,42 @@
-package com.example.demo.candidat;
+package com.example.demo.candidat.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-@lombok.Getter
-@lombok.Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "CandidatDiplome")
 @Entity
-public class CandidatDiplome {
+@Table(name = "candidat_diplome")
+public class Diplome {
+
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
     private String intitule;
     private String type;
-    private Date dateCommmission;
+
+    // dans la BD c'est dateCommission (date)
+    private LocalDate dateCommission;
+
     private String mention;
     private String pays;
     private String etablissement;
     private String specialite;
     private String ville;
     private String province;
-    private String moyenneGeneral;
-    private String candidatId;
+
+    // moyen_generale (double) dans la BD
+    private Double moyenGenerale;
 
     @ManyToOne
-    private CandidatModel candidat;
-    @OneToMany
-    private List<CandidatAnnexe> annexes = new ArrayList<>();
+    @JoinColumn(name = "candidat_id", nullable = false)   // FK -> candidat_candidat.id [file:1]
+    private Candidat candidat;
+
+    @OneToMany(mappedBy = "diplome", cascade = CascadeType.ALL)
+    private List<Annexe> annexes = new ArrayList<>();
 }
