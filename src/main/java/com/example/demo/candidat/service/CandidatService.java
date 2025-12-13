@@ -9,7 +9,7 @@ import  com.example.demo.candidat.repository.*;
 public class CandidatService {
     private DiplomeRepository diplomeRepository;
     private CandidatRepository candidatRepository;
-//    2) Mise à jour infos + CV + photo
+//    2) Mise à jour infos + CV + photo oo
 
     public Candidat updateCandidat(Long id, Candidat dto){
         Candidat c = candidatRepository.findById(id)
