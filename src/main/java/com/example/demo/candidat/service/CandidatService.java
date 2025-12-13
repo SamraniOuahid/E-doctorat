@@ -29,5 +29,6 @@ public class CandidatService {
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
         d.setCandidat(c);
         return diplomeRepository.save(d);
+
     }
 }
