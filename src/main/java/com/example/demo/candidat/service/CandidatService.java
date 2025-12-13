@@ -23,11 +23,11 @@ public class CandidatService {
 
         return candidatRepository.save(c);
     }
+
+    public Diplome addDiplome(Long candidatId, Diplome d) {
+        Candidat c = candidatRepository.findById(candidatId)
+                .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
+        d.setCandidat(c);
+        return diplomeRepository.save(d);
+    }
 }
-//    Ajouter un diplôme
-//public Diplome addDiplome(Long candidatId, Diplome d) {
-//    Candidat c = candidatRepository.findById(candidatId)
-//            .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
-//    d.setCandidat(c);
-//    return diplomeRepository.save(d);
-//}
