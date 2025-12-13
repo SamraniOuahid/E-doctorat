@@ -7,8 +7,8 @@ import  com.example.demo.candidat.repository.*;
 @Service
 @RequiredArgsConstructor
 public class CandidatService {
-    private DiplomeRepository diplomeRepository;
-    private CandidatRepository candidatRepository;
+    private final DiplomeRepository diplomeRepository;
+    private final CandidatRepository candidatRepository;
 //    2) Mise à jour infos + CV + photo oo
 
     public Candidat updateCandidat(Long id, Candidat dto){
@@ -29,6 +29,6 @@ public class CandidatService {
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
         d.setCandidat(c);
         return diplomeRepository.save(d);
-
     }
+
 }
