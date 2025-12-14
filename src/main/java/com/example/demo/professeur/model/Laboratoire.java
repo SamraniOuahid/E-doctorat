@@ -1,5 +1,6 @@
 package com.example.demo.professeur.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // IMPORT THIS
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,22 +27,22 @@ public class Laboratoire {
     @Column(length = 255)
     private String initial;
 
-    // ced_id -> professeur_ced.id
+    // FIX 1: Stop loop with CED
     @ManyToOne
     @JoinColumn(name = "ced_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties("laboratoires")
     private Ced ced;
 
-    // directeur_id -> professeur_professeur.id
+    // FIX 2: Stop loop with Directeur (Critical!)
     @ManyToOne
     @JoinColumn(name = "directeur_id", referencedColumnName = "id", nullable = false)
+    // Don't load the director's lab or subjects again
+    @JsonIgnoreProperties({"laboratoire", "etablissement", "sujets"})
     private ProfesseurModel directeur;
 
-    // etablissement_id -> professeur_etablissement.idEtablissement
+    // FIX 3: Stop loop with Etablissement
     @ManyToOne
-    @JoinColumn(
-            name = "etablissement_id",
-            referencedColumnName = "idEtablissement",
-            nullable = false
-    )
+    @JoinColumn(name = "etablissement_id", referencedColumnName = "idEtablissement", nullable = false)
+    @JsonIgnoreProperties("laboratoires")
     private Etablissement etablissement;
 }

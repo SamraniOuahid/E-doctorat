@@ -1,9 +1,9 @@
 package com.example.demo.professeur.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // IMPORT THIS
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.sql.Date;
 
 @Entity
@@ -31,17 +31,15 @@ public class FormationDoctorale {
     @Column(name = "dateAccreditation")
     private Date dateAccreditation;
 
-    // ced_id -> professeur_ced.id
+    // FIX 1: Stop infinite loop with CED
     @ManyToOne
     @JoinColumn(name = "ced_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties("formationsDoctorales")
     private Ced ced;
 
-    // etablissement_id -> professeur_etablissement.idEtablissement
+    // FIX 2: Stop infinite loop with Etablissement
     @ManyToOne
-    @JoinColumn(
-            name = "etablissement_id",
-            referencedColumnName = "idEtablissement",
-            nullable = false
-    )
+    @JoinColumn(name = "etablissement_id", referencedColumnName = "idEtablissement", nullable = false)
+    @JsonIgnoreProperties("formationsDoctorales")
     private Etablissement etablissement;
 }

@@ -8,6 +8,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Notification {
 
     @Id
@@ -19,6 +21,7 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "candidat_id", nullable = false)
     private Candidat candidat;
+
 
     // Optionnel : si tu crées les entités Commission et Sujet
     // @ManyToOne
