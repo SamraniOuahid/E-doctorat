@@ -4,6 +4,7 @@ import com.example.demo.candidat.dto.CandidatProfilDto;
 import com.example.demo.candidat.dto.DiplomeDto;
 import com.example.demo.candidat.model.Candidat;
 import com.example.demo.candidat.model.Diplome;
+import com.example.demo.candidat.repository.CandidatRepository;
 import com.example.demo.candidat.service.CandidatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CandidatController {
     private final CandidatService candidatService;
+    private final CandidatRepository candidatRepository;
 
+    @GetMapping("/{id}")
+    public Candidat getCandidat(@PathVariable Long id) {
+        return candidatRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Candidat introuvable")
+        );
+    }
+
+    @PostMapping
+    public Candidat addCandidat(@RequestBody Candidat c) {
+        return candidatRepository.save(c);
+    }
     @PutMapping("/{id}/profile")
     public Candidat updateProfile(@PathVariable Long id, @RequestBody CandidatProfilDto dto){
         Candidat c = new Candidat();
