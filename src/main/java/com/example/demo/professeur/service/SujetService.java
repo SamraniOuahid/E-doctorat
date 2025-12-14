@@ -3,24 +3,20 @@ package com.example.demo.professeur.service;
 import com.example.demo.professeur.dto.SujetDto;
 import com.example.demo.professeur.model.ProfesseurModel;
 import com.example.demo.professeur.model.Sujet;
-import com.example.demo.professeur.repository.ProfesseurRepositoryv1;
+import com.example.demo.professeur.repository.ProfesseurRepository;
 import com.example.demo.professeur.repository.SujetRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SujetService {
 
     private final SujetRepository sujetRepository;
-    private final ProfesseurRepositoryv1 professeurRepository;
-
-    public SujetService(SujetRepository sujetRepository,
-                        ProfesseurRepositoryv1 professeurRepository) {
-        this.sujetRepository = sujetRepository;
-        this.professeurRepository = professeurRepository;
-    }
+    private final ProfesseurRepository professeurRepository;
 
     // 1) list my subjects
     public List<Sujet> getSujetsByProf(Long profId) {
