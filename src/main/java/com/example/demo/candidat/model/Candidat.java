@@ -52,4 +52,12 @@ public class Candidat {
 
     @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
     private List<Postuler> postulers;
+
+
+    public String getNomComplet() {
+        String nom = (nomCandidatAr != null) ? nomCandidatAr : "";
+        String prenom = (prenomCandidatAr != null) ? prenomCandidatAr : "";
+        return (nom + " " + prenom).trim();
+    }
+
 }
