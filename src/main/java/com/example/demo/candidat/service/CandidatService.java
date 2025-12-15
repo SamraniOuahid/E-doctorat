@@ -9,6 +9,8 @@ import  com.example.demo.candidat.repository.*;
 public class CandidatService {
     private final DiplomeRepository diplomeRepository;
     private final CandidatRepository candidatRepository;
+    private final PasswordEncoder passwordEncoder;
+
 //    2) Mise à jour infos + CV + photo oo
 
     public Candidat updateCandidat(Long id, Candidat dto){
@@ -29,6 +31,12 @@ public class CandidatService {
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
         d.setCandidat(c);
         return diplomeRepository.save(d);
+    }
+
+//    register
+    public Candidat register(Candidat c){
+        c.setPassword(passwordEncoder.encode(c.getPassword()));
+        return candidatRepository.save(c);
     }
 
 }
