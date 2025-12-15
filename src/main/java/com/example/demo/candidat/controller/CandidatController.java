@@ -1,33 +1,27 @@
 package com.example.demo.candidat.controller;
 
-ym/postuler-notification/services
-import com.example.demo.candidat.model.Notification;
-import com.example.demo.candidat.service.CandidatService;
+import com.example.demo.candidat.dto.*;
+import com.example.demo.candidat.model.*;
+import com.example.demo.candidat.repository.*;
+import com.example.demo.candidat.service.*;
 import com.example.demo.professeur.model.Sujet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.example.demo.candidat.dto.CandidatProfilDto;
-import com.example.demo.candidat.dto.DiplomeDto;
-import com.example.demo.candidat.model.Candidat;
-import com.example.demo.candidat.model.Diplome;
-import com.example.demo.candidat.repository.CandidatRepository;
-import com.example.demo.candidat.service.CandidatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/candidats")
-@CrossOrigin(origins = "*") //  Allow ur Frontend to talk to this Backend
+@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class CandidatController {
 
-    @Autowired
-    private CandidatService candidatService;
+    private final CandidatService candidatService;
+    private final CandidatRepository candidatRepository;
 
-    // 1. FILTERS API
-    // Example URL: /api/candidats/sujets?keyword=Java&laboId=1
+    // 1) FILTERS API
+    // GET /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3
     @GetMapping("/sujets")
     public ResponseEntity<List<Sujet>> searchSujets(
             @RequestParam(required = false) String keyword,
@@ -39,8 +33,9 @@ public class CandidatController {
         return ResponseEntity.ok(results);
     }
 
-    // 2. POSTULER API (Panier)
-    // Example Body: [1, 5, 9]
+    // 2) POSTULER API (Panier)
+    // POST /api/candidats/{id}/postuler
+    // Body: [1,5,9]
     @PostMapping("/{id}/postuler")
     public ResponseEntity<String> postuler(@PathVariable Long id, @RequestBody List<Long> sujetIds) {
         try {
@@ -51,34 +46,32 @@ public class CandidatController {
         }
     }
 
-    // 3. NOTIFICATIONS API
+    // 3) NOTIFICATIONS API
+    // GET /api/candidats/{id}/notifications
     @GetMapping("/{id}/notifications")
     public ResponseEntity<List<Notification>> getNotifications(@PathVariable Long id) {
         return ResponseEntity.ok(candidatService.getMyNotifications(id));
     }
-}
 
-
-@RestController
-@RequestMapping("/api/candidats")
-@RequiredArgsConstructor
-public class CandidatController {
-    private final CandidatService candidatService;
-    private final CandidatRepository candidatRepository;
-
+    // 4) GET candidat
+    // GET /api/candidats/{id}
     @GetMapping("/{id}")
     public Candidat getCandidat(@PathVariable Long id) {
-        return candidatRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Candidat introuvable")
-        );
+        return candidatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
     }
 
+    // 5) ADD candidat
+    // POST /api/candidats
     @PostMapping
     public Candidat addCandidat(@RequestBody Candidat c) {
         return candidatRepository.save(c);
     }
+
+    // 6) UPDATE profile
+    // PUT /api/candidats/{id}/profile
     @PutMapping("/{id}/profile")
-    public Candidat updateProfile(@PathVariable Long id, @RequestBody CandidatProfilDto dto){
+    public Candidat updateProfile(@PathVariable Long id, @RequestBody CandidatProfilDto dto) {
         Candidat c = new Candidat();
         c.setNomCandidatAr(dto.nomCandidatAr());
         c.setPrenomCandidatAr(dto.prenomCandidatAr());
@@ -90,10 +83,10 @@ public class CandidatController {
         return candidatService.updateCandidat(id, c);
     }
 
+    // 7) ADD diplome
+    // POST /api/candidats/{id}/diplomes
     @PostMapping("/{id}/diplomes")
-    public Diplome addDiplome(@PathVariable Long id,
-                              @RequestBody DiplomeDto dto) {
-
+    public Diplome addDiplome(@PathVariable Long id, @RequestBody DiplomeDto dto) {
         Diplome d = new Diplome();
         d.setIntitule(dto.intitule());
         d.setType(dto.type());
@@ -109,4 +102,3 @@ public class CandidatController {
         return candidatService.addDiplome(id, d);
     }
 }
- main
