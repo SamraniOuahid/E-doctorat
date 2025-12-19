@@ -3,13 +3,14 @@ package com.example.demo.candidat.service;
 import com.example.demo.candidat.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import  com.example.demo.candidat.repository.*;
 import com.example.demo.candidat.model.CandidatChoix; // Assumed Entity for linking
 import com.example.demo.candidat.model.Notification;
 import com.example.demo.candidat.repository.CandidatChoixRepository;
 import com.example.demo.candidat.repository.NotificationRepository;
-import com.example.demo.candidat.repository.SujetRepository;
+import com.example.demo.professeur.repository.SujetRepository;
 import com.example.demo.candidat.specification.SujetSpecification;
 import com.example.demo.professeur.model.Sujet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CandidatService {
 
-    @Autowired
-    private SujetRepository sujetRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SujetRepository sujetRepository;
+    private final CandidatChoixRepository choixRepository;
+    private final NotificationRepository notificationRepository;
+    private final DiplomeRepository diplomeRepository;
+    private final CandidatRepository candidatRepository;
 
-    @Autowired
-    private CandidatChoixRepository choixRepository;
-
-    @Autowired
-    private NotificationRepository notificationRepository;
-
-    private DiplomeRepository diplomeRepository;
-    private CandidatRepository candidatRepository;
     @Value("${edoctorat.candidat.max-choix:3}")
     private int maxChoix;
+
 
     // ==========================================================
     // MODULE 1: FILTERS
@@ -44,6 +42,7 @@ public class CandidatService {
                 SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, etablissementId)
         );
     }
+
 
     // ==========================================================
     // MODULE 2: POSTULER (Dynamic Max Choices)
@@ -95,9 +94,7 @@ public class CandidatService {
     }
     //    2) Mise à jour infos + CV + photo oo
 
-    private final DiplomeRepository diplomeRepository;
-    private final CandidatRepository candidatRepository;
-    private final PasswordEncoder passwordEncoder;
+
 
 //    2) Mise à jour infos + CV + photo oo
 
