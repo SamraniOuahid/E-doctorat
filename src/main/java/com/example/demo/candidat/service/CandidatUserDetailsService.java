@@ -1,4 +1,4 @@
-package com.example.demo.security;
+package com.example.demo.candidat.service;
 
 import com.example.demo.candidat.model.Candidat;
 import com.example.demo.candidat.repository.CandidatRepository;
@@ -21,8 +21,8 @@ public class CandidatUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Email introuvable: " + email));
 
         return User.withUsername(c.getEmail())
-                .password(c.getPassword())
-                .disabled(!c.isEnabled())
+                .password(c.getPassword())      // doit être déjà encodé en Bcrypt
+                      // si tu as un boolean enabled
                 .roles("CANDIDAT")
                 .build();
     }

@@ -1,4 +1,5 @@
 package com.example.demo.candidat.model;
+import com.example.demo.security.user.UserAccount;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,5 +60,9 @@ public class Candidat {
         String prenom = (prenomCandidatAr != null) ? prenomCandidatAr : "";
         return (nom + " " + prenom).trim();
     }
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserAccount user;
+
 
 }
