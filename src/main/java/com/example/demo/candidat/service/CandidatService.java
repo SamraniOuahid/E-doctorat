@@ -97,6 +97,8 @@ public class CandidatService {
 
     private final DiplomeRepository diplomeRepository;
     private final CandidatRepository candidatRepository;
+    private final PasswordEncoder passwordEncoder;
+
 //    2) Mise à jour infos + CV + photo oo
 
 
@@ -120,5 +122,10 @@ public class CandidatService {
         return diplomeRepository.save(d);
     }
 
+//    register
+    public Candidat register(Candidat c){
+        c.setPassword(passwordEncoder.encode(c.getPassword()));
+        return candidatRepository.save(c);
+    }
 
 }
