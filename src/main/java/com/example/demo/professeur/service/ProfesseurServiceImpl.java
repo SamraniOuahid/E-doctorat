@@ -4,7 +4,8 @@ import com.example.demo.professeur.dto.CandidatForProfDto;
 import com.example.demo.professeur.model.Inscription;
 import com.example.demo.professeur.model.Sujet;
 import com.example.demo.professeur.repository.InscriptionRepository;
-import com.example.demo.professeur.repository.SujetRepository;
+// Le nouvel import (là où se trouve votre Repository avec Specification)
+import com.example.demo.candidat.repository.SujetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

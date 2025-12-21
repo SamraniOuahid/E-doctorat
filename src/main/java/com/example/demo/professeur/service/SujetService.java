@@ -4,7 +4,7 @@ import com.example.demo.professeur.dto.SujetDto;
 import com.example.demo.professeur.model.ProfesseurModel;
 import com.example.demo.professeur.model.Sujet;
 import com.example.demo.professeur.repository.ProfesseurRepository;
-import com.example.demo.professeur.repository.SujetRepository;
+import com.example.demo.candidat.repository.SujetRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

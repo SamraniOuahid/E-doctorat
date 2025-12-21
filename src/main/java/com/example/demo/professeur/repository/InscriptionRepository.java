@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface InscriptionRepository extends JpaRepository<Inscription, Long> {
-
+    List<Inscription> findBySujet_FormationDoctorale_Ced_Id(Long cedId);
     // All inscriptions for one subject
     List<Inscription> findBySujet_Id(Long sujetId);
 
@@ -24,4 +24,10 @@ public interface InscriptionRepository extends JpaRepository<Inscription, Long> 
            WHERE i.sujet.professeur.id = :profId
            """)
     List<Inscription> findByProfesseurId(@Param("profId") Long profId);
+
+    // Trouver les inscrits d'un CED spécifique
+    // Inscription -> Sujet -> Formation -> Ced
+    @Query("SELECT i FROM Inscription i WHERE i.sujet.formationDoctorale.ced.id = :cedId AND i.valider = true")
+    List<Inscription> findInscritsByCed(@Param("cedId") Long cedId);
+
 }
