@@ -1,4 +1,6 @@
 package com.example.demo.candidat.model;
+
+import com.example.demo.scolarite.model.EtatDossier; // Assure-toi d'importer l'Enum
 import com.example.demo.security.user.UserAccount;
 
 import jakarta.persistence.*;
@@ -17,10 +19,13 @@ public class Candidat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     private String cne;
     private String cin;
     private String nomCandidatAr;
@@ -37,17 +42,24 @@ public class Candidat {
     private String telCandidat;
     private String pathCv;
     private String pathPhoto;
-    private Integer etatDossier;
     private String situationFamiliale;
 
-    @ManyToOne
-    @JoinColumn(name = "pays_id", nullable = false)
-    private Pays pays;
+    // --- MODIFICATION ICI : Gestion de l'état du dossier ---
 
-    // Si tu as une entité User (spring security) tu peux la mapper ici
-    // @ManyToOne
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private User user;
+    // On utilise l'Enum pour plus de sécurité (stocké en String dans la BDD pour la lisibilité)
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private EtatDossier etatDossier = EtatDossier.EN_ATTENTE;
+
+    // Nouveau champ pour le commentaire de la scolarité
+    @Column(columnDefinition = "TEXT")
+    private String commentaireScolarite;
+
+    // -------------------------------------------------------
+
+    @ManyToOne
+    @JoinColumn(name = "pays_id", nullable = true) // mis nullable=true temporairement si erreur migration
+    private Pays pays;
 
     @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
     private List<Notification> notifications;
@@ -55,14 +67,13 @@ public class Candidat {
     @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
     private List<Postuler> postulers;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserAccount user;
 
     public String getNomComplet() {
         String nom = (nomCandidatAr != null) ? nomCandidatAr : "";
         String prenom = (prenomCandidatAr != null) ? prenomCandidatAr : "";
         return (nom + " " + prenom).trim();
     }
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserAccount user;
-
 }
