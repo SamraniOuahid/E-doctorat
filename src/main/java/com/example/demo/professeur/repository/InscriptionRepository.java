@@ -24,14 +24,11 @@ public interface InscriptionRepository extends JpaRepository<Inscription, Long> 
            WHERE i.sujet.professeur.id = :profId
            """)
     List<Inscription> findByProfesseurId(@Param("profId") Long profId);
-
-<<<<<<< HEAD
     // Trouver les inscrits d'un CED spécifique
     // Inscription -> Sujet -> Formation -> Ced
     @Query("SELECT i FROM Inscription i WHERE i.sujet.formationDoctorale.ced.id = :cedId AND i.valider = true")
     List<Inscription> findInscritsByCed(@Param("cedId") Long cedId);
 
-=======
     // ✅ All inscriptions for subjects of one labo
     @Query("""
            SELECT i
@@ -48,5 +45,4 @@ public interface InscriptionRepository extends JpaRepository<Inscription, Long> 
              AND i.valider = true
            """)
     List<Inscription> findAcceptedByLaboId(@Param("laboId") Long laboId);
->>>>>>> 66e17cff59cd77ce3bbc14d448b3d334d2331f24
 }
