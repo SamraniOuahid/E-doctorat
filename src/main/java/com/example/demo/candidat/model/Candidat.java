@@ -2,6 +2,7 @@ package com.example.demo.candidat.model;
 
 import com.example.demo.scolarite.model.EtatDossier; // Assure-toi d'importer l'Enum
 import com.example.demo.security.user.UserAccount;
+
 import jakarta.persistence.*;
 import lombok.*;
 

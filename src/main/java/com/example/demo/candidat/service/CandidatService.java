@@ -10,7 +10,8 @@ import com.example.demo.candidat.model.CandidatChoix; // Assumed Entity for link
 import com.example.demo.candidat.model.Notification;
 import com.example.demo.candidat.repository.CandidatChoixRepository;
 import com.example.demo.candidat.repository.NotificationRepository;
-import com.example.demo.professeur.repository.SujetRepository;
+//import com.example.demo.professeur.repository.SujetRepository;
+import com.example.demo.candidat.repository.SujetRepository;
 import com.example.demo.candidat.specification.SujetSpecification;
 import com.example.demo.professeur.model.Sujet;
 import org.springframework.beans.factory.annotation.Autowired;
