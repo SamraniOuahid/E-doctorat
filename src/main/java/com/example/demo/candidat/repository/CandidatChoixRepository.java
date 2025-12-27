@@ -1,6 +1,7 @@
 package com.example.demo.candidat.repository;
 
 import com.example.demo.candidat.model.CandidatChoix;
+import com.example.demo.professeur.model.Sujet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,5 @@ public interface CandidatChoixRepository extends JpaRepository<CandidatChoix, Lo
 
     // 4. Check if a specific choice already exists (Prevent duplicates)
     boolean existsByCandidatIdAndSujetId(Long candidatId, Long sujetId);
+    List<CandidatChoix> findBySujetIn(List<Sujet> sujets);
 }

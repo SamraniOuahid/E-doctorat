@@ -3,12 +3,14 @@ package com.example.demo.candidat.service;
 import com.example.demo.candidat.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import  com.example.demo.candidat.repository.*;
 import com.example.demo.candidat.model.CandidatChoix; // Assumed Entity for linking
 import com.example.demo.candidat.model.Notification;
 import com.example.demo.candidat.repository.CandidatChoixRepository;
 import com.example.demo.candidat.repository.NotificationRepository;
+//import com.example.demo.professeur.repository.SujetRepository;
 import com.example.demo.candidat.repository.SujetRepository;
 import com.example.demo.candidat.specification.SujetSpecification;
 import com.example.demo.professeur.model.Sujet;
@@ -21,19 +23,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CandidatService {
-    @Autowired
-    private SujetRepository sujetRepository;
 
-    @Autowired
-    private CandidatChoixRepository choixRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SujetRepository sujetRepository;
+    private final CandidatChoixRepository choixRepository;
+    private final NotificationRepository notificationRepository;
+    private final DiplomeRepository diplomeRepository;
+    private final CandidatRepository candidatRepository;
 
-    @Autowired
-    private NotificationRepository notificationRepository;
-
-    private DiplomeRepository diplomeRepository;
-    private CandidatRepository candidatRepository;
     @Value("${edoctorat.candidat.max-choix:3}")
     private int maxChoix;
+
 
     // ==========================================================
     // MODULE 1: FILTERS
@@ -43,6 +43,7 @@ public class CandidatService {
                 SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, etablissementId)
         );
     }
+
 
     // ==========================================================
     // MODULE 2: POSTULER (Dynamic Max Choices)
@@ -94,6 +95,11 @@ public class CandidatService {
     }
     //    2) Mise à jour infos + CV + photo oo
 
+
+
+//    2) Mise à jour infos + CV + photo oo
+
+
     public Candidat updateCandidat(Long id, Candidat dto){
         Candidat c = candidatRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Candidat introuvable"));
@@ -106,4 +112,18 @@ public class CandidatService {
 
         return candidatRepository.save(c);
     }
+
+    public Diplome addDiplome(Long candidatId, Diplome d) {
+        Candidat c = candidatRepository.findById(candidatId)
+                .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
+        d.setCandidat(c);
+        return diplomeRepository.save(d);
+    }
+
+//    register
+    public Candidat register(Candidat c){
+        c.setPassword(passwordEncoder.encode(c.getPassword()));
+        return candidatRepository.save(c);
+    }
+
 }
