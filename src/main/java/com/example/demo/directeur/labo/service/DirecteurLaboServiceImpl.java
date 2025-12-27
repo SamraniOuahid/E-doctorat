@@ -7,7 +7,7 @@ import com.example.demo.directeur.labo.dto.LaboSujetDto;
 import com.example.demo.professeur.model.Inscription;
 import com.example.demo.professeur.model.Sujet;
 import com.example.demo.professeur.repository.InscriptionRepository;
-import com.example.demo.professeur.repository.SujetRepository;
+import com.example.demo.candidat.repository.SujetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

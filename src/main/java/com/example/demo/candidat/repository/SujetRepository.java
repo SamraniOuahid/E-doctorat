@@ -11,4 +11,7 @@ import java.util.List;
 public interface SujetRepository extends JpaRepository<Sujet, Long>, JpaSpecificationExecutor<Sujet> {
     // JpaSpecificationExecutor enables the .findAll(Specification) method
     List<Sujet> findByProfesseur_Id(Long professeurId);
+
+    // All subjects of a labo (via professeur.laboratoire.id)
+    List<Sujet> findByProfesseur_Laboratoire_Id(Long laboId);
 }
