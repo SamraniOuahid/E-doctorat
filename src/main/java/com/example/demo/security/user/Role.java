@@ -1,4 +1,9 @@
 package com.example.demo.security.user;
 
-public class Role {
+public enum Role {
+    CANDIDAT,
+    PROFESSEUR,
+    DIRECTEUR_LABO,
+    DIRECTEUR_CED,
+    SCOLARITE
 }

@@ -1,23 +1,44 @@
 package com.example.demo.security.user;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "users")
-@Data
+@Table(name = "sec_user_account")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserAccount {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;   // plus tard: hashé (BCrypt)
+    private String fullName;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;       // ex: "ROLE_CANDIDAT"
+    private AuthProvider provider;   // GOOGLE only for now
 
-    // relation 1–1 avec Candidat (côté candidat)
+    private String providerId;       // Google "sub" claim (user id at Google)
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "sec_user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    private Role activeRole;         // for "changer de rôle" later
 }

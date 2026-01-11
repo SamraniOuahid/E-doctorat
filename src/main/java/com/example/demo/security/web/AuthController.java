@@ -1,20 +1,92 @@
 package com.example.demo.security.web;
 
-import com.example.demo.candidat.model.Candidat;
-import com.example.demo.security.dto.RegisterDto;
-import com.example.demo.security.service.AuthService;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.security.oauth2.CustomOAuth2User;
+import com.example.demo.security.user.Role;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    /**
+     * Retourne l'utilisateur actuellement connecté (via Google OAuth2).
+     *
+     * - Si l'utilisateur est connecté : 200 + JSON avec email, nom, rôles, etc.
+     * - Si personne n'est connecté : 401 (UNAUTHORIZED)
+     */
+    @GetMapping("/me")
+    public ResponseEntity<CurrentUserResponse> me(
+            @AuthenticationPrincipal CustomOAuth2User user
+    ) {
+        if (user == null) {
+            // Personne connectée → 401 pour que le front sache qu'il doit rediriger vers login
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
 
-    @PostMapping("/register")
-    public Candidat register(@RequestBody RegisterDto dto) {
-        return authService.registerCandidat(dto.email(), dto.password());
+        // Rôles sous forme de chaîne ("PROFESSEUR", "DIRECTEUR_LABO", etc.)
+        Set<String> roles = user.getUserAccount().getRoles()
+                .stream()
+                .map(Role::name)
+                .collect(Collectors.toSet());
+
+        // Récupération de quelques infos brutes de Google (optionnel)
+        String pictureUrl = user.getAttribute("picture");           // URL avatar Google
+        Boolean emailVerified = user.getAttribute("email_verified"); // peut être null
+        String provider = "google";
+
+        CurrentUserResponse body = new CurrentUserResponse(
+                user.getEmail(),
+                user.getFullName(),
+                roles,
+                provider,
+                pictureUrl,
+                emailVerified != null ? emailVerified : false,
+                Instant.now()   // juste pour debug / info
+        );
+
+        return ResponseEntity.ok(body);
     }
+
+    /**
+     * Endpoint de logout.
+     *
+     * - Invalide la session Spring Security (mais NE DÉCONNECTE PAS le compte Google dans le navigateur).
+     * - À appeler depuis le front (POST /api/auth/logout).
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request,
+                                       HttpServletResponse response) throws Exception {
+        // Invalide l'authentification Spring Security
+        request.logout();
+        // Optionnel : invalidation de la session HTTP
+        if (request.getSession(false) != null) {
+            request.getSession(false).invalidate();
+        }
+        // Pas de contenu à retourner
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * DTO retourné par /api/auth/me
+     * (forme propre pour que le front consomme facilement).
+     */
+    public record CurrentUserResponse(
+            String email,
+            String fullName,
+            Set<String> roles,
+            String provider,
+            String pictureUrl,
+            boolean emailVerified,
+            Instant serverTime
+    ) {}
 }
