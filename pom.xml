@@ -19,6 +19,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
+        <!-- You can still run with JDK 21 / 25, but sources are compiled as Java 17 -->
         <java.version>17</java.version>
     </properties>
 
@@ -42,6 +43,18 @@
             <version>9.5.0</version>
         </dependency>
 
+        <!-- Spring Security (core) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- 🔐 OAuth2 Client (Google login, etc.) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+
         <!-- Lombok (getters/setters, etc.) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -50,12 +63,19 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Devtools (rechargement à chaud) -->
+        <!-- Devtools (hot reload) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- JSP support (if you use JSP pages) -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jasper</artifactId>
+            <version>11.0.13</version>
         </dependency>
 
         <!-- Tests -->
@@ -64,36 +84,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- JSP support (si tu utilises des JSP) -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jasper</artifactId>
-            <version>11.0.13</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
-            <scope>runtime</scope>
-        </dependency>
-
     </dependencies>
 
     <build>

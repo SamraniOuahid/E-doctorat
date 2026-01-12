@@ -1,17 +1,12 @@
 package com.example.demo.security.service; // Correction du package
 
-import com.example.demo.security.dto.AuthenticationRequest;
-import com.example.demo.security.dto.AuthenticationResponse;
-import com.example.demo.security.dto.RegisterRequest;
-import com.example.demo.security.user.User;
-import com.example.demo.security.user.UserRepository;
+import com.example.demo.security.user.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import java.util.Set;
 
 import java.util.Collections;
 
@@ -19,31 +14,42 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        // 1. Création de l'utilisateur avec le Builder (plus propre)
-        var user = User.builder()
-                .nom(request.nom())         // Ajout du nom
-                .prenom(request.prenom())   // Ajout du prénom
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .role(request.role() != null ? request.role() : "CANDIDAT")
+    @Transactional
+    public UserAccount loadOrCreateFromGoogle(OAuth2User googleUser) {
+        String email = googleUser.getAttribute("email");
+        String name  = googleUser.getAttribute("name");
+        String sub   = googleUser.getAttribute("sub");
+
+        // 1) Restriction domaine usmba
+        if (email == null || !email.toLowerCase().endsWith("@usmba.ac.ma")) {
+            throw new RuntimeException("Email doit être @usmba.ac.ma");
+        }
+
+        return userRepository.findByEmail(email)
+                .map(existing -> updateExisting(existing, name, sub))
+                .orElseGet(() -> createNew(email, name, sub));
+    }
+
+    private UserAccount updateExisting(UserAccount user, String name, String sub) {
+        user.setFullName(name);
+        user.setProvider(AuthProvider.GOOGLE);
+        user.setProviderId(sub);
+        return userRepository.save(user);
+    }
+
+    private UserAccount createNew(String email, String name, String sub) {
+        // TODO: plus tard, déterminer les rôles à partir des tables professeur/directeur
+        UserAccount user = UserAccount.builder()
+                .email(email)
+                .fullName(name)
+                .provider(AuthProvider.GOOGLE)
+                .providerId(sub)
+                .roles(Set.of())  // pour le moment, pas de rôle automatique
                 .build();
 
-        // 2. Sauvegarder en base
-        repository.save(user);
-
-        // 3. Convertir en UserDetails pour le JWT
-        // (Car ton entité User n'est pas forcément un UserDetails Spring Security)
-        UserDetails userDetails = createSpringSecurityUser(user);
-
-        // 4. Générer le token
-        var jwtToken = jwtService.generateToken(userDetails);
-        return new AuthenticationResponse(jwtToken);
+        return userRepository.save(user);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
