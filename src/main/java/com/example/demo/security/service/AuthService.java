@@ -1,4 +1,4 @@
-package com.example.demo.security.service;
+package com.example.demo.security.service; // Correction du package
 
 import com.example.demo.security.user.*;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Set;
+
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +50,37 @@ public class AuthService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        // 1. Authentifier via AuthenticationManager
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password()
+                )
+        );
+
+        // 2. Récupérer l'utilisateur depuis la BDD
+        var user = repository.findByEmail(request.email())
+                .orElseThrow();
+
+        // 3. Convertir en UserDetails pour le JWT
+        UserDetails userDetails = createSpringSecurityUser(user);
+
+        // 4. Générer le token
+        var jwtToken = jwtService.generateToken(userDetails);
+        return new AuthenticationResponse(jwtToken);
+    }
+
+    // Méthode utilitaire pour transformer ton Entité User en UserDetails (Spring Security)
+    private UserDetails createSpringSecurityUser(User user) {
+        String roleName = user.getRole().startsWith("ROLE_") ? user.getRole() : "ROLE_" + user.getRole();
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority(roleName))
+        );
     }
 }

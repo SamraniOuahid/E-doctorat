@@ -1,20 +1,13 @@
 package com.example.demo.candidat.service;
 
+import com.example.demo.candidat.dto.CandidatUpdateDTO;
 import com.example.demo.candidat.model.*;
-import org.springframework.beans.factory.annotation.Value;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import  com.example.demo.candidat.repository.*;
-import com.example.demo.candidat.model.CandidatChoix; // Assumed Entity for linking
-import com.example.demo.candidat.model.Notification;
-import com.example.demo.candidat.repository.CandidatChoixRepository;
-import com.example.demo.candidat.repository.NotificationRepository;
-//import com.example.demo.professeur.repository.SujetRepository;
-import com.example.demo.candidat.repository.SujetRepository;
+import com.example.demo.candidat.repository.*;
 import com.example.demo.candidat.specification.SujetSpecification;
 import com.example.demo.professeur.model.Sujet;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +24,9 @@ public class CandidatService {
     private final DiplomeRepository diplomeRepository;
     private final CandidatRepository candidatRepository;
 
+
     @Value("${edoctorat.candidat.max-choix:3}")
     private int maxChoix;
-
 
     // ==========================================================
     // MODULE 1: FILTERS
@@ -44,30 +37,24 @@ public class CandidatService {
         );
     }
 
-
     // ==========================================================
-    // MODULE 2: POSTULER (Dynamic Max Choices)
+    // MODULE 2: POSTULER
     // ==========================================================
-
     @Transactional
     public void postuler(Long candidatId, List<Long> sujetIds) throws RuntimeException {
-        // Validation: Empty check
         if (sujetIds == null || sujetIds.isEmpty()) {
             throw new RuntimeException("Vous devez sélectionner au moins un sujet.");
         }
 
-        // 2. USE THE VARIABLE HERE (No more hardcoded 3)
         if (sujetIds.size() > maxChoix) {
             throw new RuntimeException("Erreur: Vous ne pouvez postuler qu'à " + maxChoix + " sujets maximum.");
         }
 
-        // 3. Verify Subjects Exist and are Published
         List<Sujet> sujets = sujetRepository.findAllById(sujetIds);
         if (sujets.size() != sujetIds.size()) {
             throw new RuntimeException("Erreur: Certains sujets sélectionnés sont introuvables.");
         }
 
-        // 4. Save Selection
         for (Sujet sujet : sujets) {
             if (!sujet.isPublier()) {
                 throw new RuntimeException("Le sujet '" + sujet.getTitre() + "' n'est plus disponible.");
@@ -88,27 +75,45 @@ public class CandidatService {
     }
 
     public void createNotification(Long candidatId, String type) {
-        Notification notif = new Notification();
-        notif.setCandidat(notif.getCandidat());
-        notif.setType(type);
-        notificationRepository.save(notif);
+        Candidat candidat = candidatRepository.findById(candidatId).orElse(null);
+        if (candidat != null) {
+            Notification notif = new Notification();
+            notif.setCandidat(candidat); // Correction ici : on associe le candidat trouvé
+            notif.setType(type);
+            notificationRepository.save(notif);
+        }
     }
-    //    2) Mise à jour infos + CV + photo oo
 
+    // ==========================================================
+    // MODULE 4: GESTION PROFIL (UPDATE & DIPLOMES)
+    // ==========================================================
 
-
-//    2) Mise à jour infos + CV + photo oo
-
-
-    public Candidat updateCandidat(Long id, Candidat dto){
+    /**
+     * Met à jour les informations du profil candidat via un DTO sécurisé.
+     */
+    public Candidat updateCandidat(Long id, CandidatUpdateDTO dto) { // <--- Changement ici : Type CandidatUpdateDTO
         Candidat c = candidatRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Candidat introuvable"));
-        c.setNomCandidatAr(dto.getNomCandidatAr());
-        c.setPrenomCandidatAr(dto.getPrenomCandidatAr());
-        c.setAdresse(dto.getAdresse());
-        c.setTelCandidat(dto.getTelCandidat());
-        c.setPathCv(dto.getPathCv());
-        c.setPathPhoto(dto.getPathPhoto());
+                .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
+
+        // Mise à jour conditionnelle (seulement si le champ n'est pas null dans le DTO)
+
+        // Identifiants
+        if (dto.getCne() != null) c.setCne(dto.getCne());
+        if (dto.getCin() != null) c.setCin(dto.getCin());
+
+        // Infos perso
+        if (dto.getNomCandidatAr() != null) c.setNomCandidatAr(dto.getNomCandidatAr());
+        if (dto.getPrenomCandidatAr() != null) c.setPrenomCandidatAr(dto.getPrenomCandidatAr());
+        if (dto.getSexe() != null) c.setSexe(dto.getSexe());
+        if (dto.getDateDeNaissance() != null) c.setDateDeNaissance(dto.getDateDeNaissance());
+        if (dto.getSituationFamiliale() != null) c.setSituationFamiliale(dto.getSituationFamiliale());
+        if (dto.getTypeDeHandiCape() != null) c.setTypeDeHandiCape(dto.getTypeDeHandiCape());
+
+        // Coordonnées
+        if (dto.getTelCandidat() != null) c.setTelCandidat(dto.getTelCandidat());
+        if (dto.getAdresse() != null) c.setAdresse(dto.getAdresse());
+        if (dto.getVilleDeNaissance() != null) c.setVilleDeNaissance(dto.getVilleDeNaissance());
+        if (dto.getPays() != null) c.setPays(dto.getPays());
 
         return candidatRepository.save(c);
     }
@@ -120,10 +125,9 @@ public class CandidatService {
         return diplomeRepository.save(d);
     }
 
-//    register
-    public Candidat register(Candidat c){
+    // Auth Register (interne)
+    public Candidat register(Candidat c) {
         c.setPassword(passwordEncoder.encode(c.getPassword()));
         return candidatRepository.save(c);
     }
-
 }

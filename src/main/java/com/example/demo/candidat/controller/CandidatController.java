@@ -61,26 +61,20 @@ public class CandidatController {
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
     }
 
-    // 5) ADD candidat
-    // POST /api/candidats
-    @PostMapping
-    public Candidat addCandidat(@RequestBody Candidat c) {
-        return candidatRepository.save(c);
-    }
+
 
     // 6) UPDATE profile
     // PUT /api/candidats/{id}/profile
-    @PutMapping("/{id}/profile")
-    public Candidat updateProfile(@PathVariable Long id, @RequestBody CandidatProfilDto dto) {
-        Candidat c = new Candidat();
-        c.setNomCandidatAr(dto.nomCandidatAr());
-        c.setPrenomCandidatAr(dto.prenomCandidatAr());
-        c.setAdresse(dto.adresse());
-        c.setTelCandidat(dto.telCandidat());
-        c.setPathCv(dto.pathCv());
-        c.setPathPhoto(dto.pathPhoto());
+    // import com.example.demo.candidat.dto.CandidatUpdateDTO;
 
-        return candidatService.updateCandidat(id, c);
+    @PutMapping("/{id}")
+    public ResponseEntity<Candidat> updateProfil(
+            @PathVariable Long id,
+            @RequestBody CandidatUpdateDTO candidatDto // <--- Ici aussi, utilise le DTO
+    ) {
+        System.out.println("DTO REÇU : " + candidatDto);
+        Candidat updatedCandidat = candidatService.updateCandidat(id, candidatDto);
+        return ResponseEntity.ok(updatedCandidat);
     }
 
     // 7) ADD diplome
@@ -100,5 +94,16 @@ public class CandidatController {
         d.setMoyenGenerale(dto.moyenGenerale());
 
         return candidatService.addDiplome(id, d);
+    }
+    @GetMapping("/qui-suis-je")
+    public ResponseEntity<String> quiSuisJe() {
+        // On récupère l'authentification actuelle
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+
+        return ResponseEntity.ok(
+                "Nom: " + auth.getName() + "\n" +
+                        "Rôles: " + auth.getAuthorities() + "\n" +
+                        "Est authentifié ? " + auth.isAuthenticated()
+        );
     }
 }

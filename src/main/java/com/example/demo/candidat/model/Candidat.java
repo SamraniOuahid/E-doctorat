@@ -1,8 +1,9 @@
 package com.example.demo.candidat.model;
 
 import com.example.demo.scolarite.model.EtatDossier; // Assure-toi d'importer l'Enum
-import com.example.demo.security.user.UserAccount;
+import com.example.demo.security.user.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class Candidat {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -69,11 +71,15 @@ public class Candidat {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserAccount user;
+    private User user;
 
     public String getNomComplet() {
         String nom = (nomCandidatAr != null) ? nomCandidatAr : "";
         String prenom = (prenomCandidatAr != null) ? prenomCandidatAr : "";
         return (nom + " " + prenom).trim();
+    }
+
+    public void setPays(String pays) {
+
     }
 }
