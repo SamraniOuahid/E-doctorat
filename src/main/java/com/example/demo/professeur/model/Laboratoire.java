@@ -1,6 +1,6 @@
 package com.example.demo.professeur.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // IMPORT THIS
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,8 @@ public class Laboratoire {
     @Column(length = 255, nullable = false)
     private String nomLaboratoire;
 
-    @Column(columnDefinition = "LONGTEXT")
+    // POSTGRESQL FIX
+    @Lob
     private String description;
 
     @Column(length = 100)
@@ -33,10 +34,9 @@ public class Laboratoire {
     @JsonIgnoreProperties("laboratoires")
     private Ced ced;
 
-    // FIX 2: Stop loop with Directeur (Critical!)
+    // FIX 2: Stop loop with Directeur
     @ManyToOne
     @JoinColumn(name = "directeur_id", referencedColumnName = "id", nullable = false)
-    // Don't load the director's lab or subjects again
     @JsonIgnoreProperties({"laboratoire", "etablissement", "sujets"})
     private ProfesseurModel directeur;
 

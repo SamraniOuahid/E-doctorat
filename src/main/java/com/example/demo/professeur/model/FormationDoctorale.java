@@ -1,9 +1,10 @@
 package com.example.demo.professeur.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // IMPORT THIS
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.sql.Date;
 
 @Entity
@@ -25,7 +26,9 @@ public class FormationDoctorale {
     @Column(length = 255, nullable = false)
     private String titre;
 
-    @Column(name = "axeDeRecherche", columnDefinition = "LONGTEXT")
+    // POSTGRESQL FIX
+    @Lob
+    @Column(name = "axeDeRecherche")
     private String axeDeRecherche;
 
     @Column(name = "dateAccreditation")
