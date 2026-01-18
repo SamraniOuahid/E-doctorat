@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -129,5 +130,10 @@ public class CandidatService {
     public Candidat register(Candidat c) {
         c.setPassword(passwordEncoder.encode(c.getPassword()));
         return candidatRepository.save(c);
+    }
+
+    // fing by id
+    public Optional<Candidat> findById(Long candidatId){
+        return candidatRepository.findById(candidatId);
     }
 }

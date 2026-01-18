@@ -18,7 +18,6 @@ import java.util.List;
 public class CandidatController {
 
     private final CandidatService candidatService;
-    private final CandidatRepository candidatRepository;
 
     // 1) FILTERS API
     // GET /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3
@@ -57,7 +56,7 @@ public class CandidatController {
     // GET /api/candidats/{id}
     @GetMapping("/{id}")
     public Candidat getCandidat(@PathVariable Long id) {
-        return candidatRepository.findById(id)
+        return candidatService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
     }
 
