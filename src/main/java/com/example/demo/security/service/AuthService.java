@@ -1,3 +1,4 @@
+feature/new-ouahid
 package com.example.demo.security.service;
 
 import com.example.demo.security.dto.AuthenticationRequest;
@@ -10,6 +11,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+
+package com.example.demo.security.service; // Correction du package
+
+import com.example.demo.security.user.*;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+main
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +37,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final com.example.demo.email.EmailService emailService;
 
+ feature/new-ouahid
     // ==========================================
     // 1. LOGIN CLASSIQUE (Email + Password)
     // ==========================================
@@ -50,6 +63,27 @@ public class AuthService {
 
         return new AuthenticationResponse(jwtToken);
     }
+//    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+//        // 1. Authentifier via AuthenticationManager
+//        authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.email(),
+//                        request.password()
+//                )
+//        );
+//
+//        // 2. Récupérer l'utilisateur depuis la BDD
+//        var user = repository.findByEmail(request.email())
+//                .orElseThrow();
+//
+//        // 3. Convertir en UserDetails pour le JWT
+//        UserDetails userDetails = createSpringSecurityUser(user);
+//
+//        // 4. Générer le token
+//        var jwtToken = jwtService.generateToken(userDetails);
+//        return new AuthenticationResponse(jwtToken);
+//    }
+ main
 
     // ==========================================
     // 1.1 REGISTER CLASSIQUE

@@ -15,7 +15,8 @@ public class Ced {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "LONGTEXT")
+    // POSTGRESQL FIX: Use TEXT or @Lob (not LONGTEXT)
+    @Lob
     private String description;
 
     @Column(length = 100)
@@ -27,7 +28,7 @@ public class Ced {
     @Column(length = 255, nullable = false)
     private String titre;
 
-    // FIX: Add @JsonIgnoreProperties to stop the infinite loop
+    // FIX: Add @JsonIgnoreProperties to stop infinite loop
     @ManyToOne
     @JoinColumn(name = "directeur_id", referencedColumnName = "id")
     @JsonIgnoreProperties({"laboratoire", "etablissement", "sujets", "ced"})

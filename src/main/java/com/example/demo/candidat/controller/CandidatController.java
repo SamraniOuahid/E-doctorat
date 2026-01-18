@@ -60,8 +60,6 @@ public class CandidatController {
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
     }
 
-
-
     // 6) UPDATE profile
     // PUT /api/candidats/{id}/profile
     // import com.example.demo.candidat.dto.CandidatUpdateDTO;
