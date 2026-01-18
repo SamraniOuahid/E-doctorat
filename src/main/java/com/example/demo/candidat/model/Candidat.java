@@ -1,7 +1,6 @@
 package com.example.demo.candidat.model;
 
 import com.example.demo.scolarite.model.EtatDossier; // Assure-toi d'importer l'Enum
-import com.example.demo.security.user.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -48,7 +47,8 @@ public class Candidat {
 
     // --- MODIFICATION ICI : Gestion de l'état du dossier ---
 
-    // On utilise l'Enum pour plus de sécurité (stocké en String dans la BDD pour la lisibilité)
+    // On utilise l'Enum pour plus de sécurité (stocké en String dans la BDD pour la
+    // lisibilité)
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private EtatDossier etatDossier = EtatDossier.EN_ATTENTE;
@@ -71,7 +71,7 @@ public class Candidat {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private com.example.demo.security.user.UserAccount user;
 
     public String getNomComplet() {
         String nom = (nomCandidatAr != null) ? nomCandidatAr : "";

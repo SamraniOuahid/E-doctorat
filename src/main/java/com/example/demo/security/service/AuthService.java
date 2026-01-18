@@ -1,86 +1,116 @@
-package com.example.demo.security.service; // Correction du package
+package com.example.demo.security.service;
 
-import com.example.demo.security.user.*;
+import com.example.demo.security.dto.AuthenticationRequest;
+import com.example.demo.security.dto.AuthenticationResponse;
+import com.example.demo.security.jwt.JwtService;
+import com.example.demo.security.user.AuthProvider;
+import com.example.demo.security.user.UserAccount;
+import com.example.demo.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
-import java.util.Set;
-
-import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final com.example.demo.candidat.repository.CandidatRepository candidatRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    @Transactional
-    public UserAccount loadOrCreateFromGoogle(OAuth2User googleUser) {
-        String email = googleUser.getAttribute("email");
-        String name  = googleUser.getAttribute("name");
-        String sub   = googleUser.getAttribute("sub");
+    private final AuthenticationManager authenticationManager;
+    private final com.example.demo.email.EmailService emailService;
 
-        // 1) Restriction domaine usmba
-        if (email == null || !email.toLowerCase().endsWith("@usmba.ac.ma")) {
-            throw new RuntimeException("Email doit être @usmba.ac.ma");
-        }
-
-        return userRepository.findByEmail(email)
-                .map(existing -> updateExisting(existing, name, sub))
-                .orElseGet(() -> createNew(email, name, sub));
-    }
-
-    private UserAccount updateExisting(UserAccount user, String name, String sub) {
-        user.setFullName(name);
-        user.setProvider(AuthProvider.GOOGLE);
-        user.setProviderId(sub);
-        return userRepository.save(user);
-    }
-
-    private UserAccount createNew(String email, String name, String sub) {
-        // TODO: plus tard, déterminer les rôles à partir des tables professeur/directeur
-        UserAccount user = UserAccount.builder()
-                .email(email)
-                .fullName(name)
-                .provider(AuthProvider.GOOGLE)
-                .providerId(sub)
-                .roles(Set.of())  // pour le moment, pas de rôle automatique
-                .build();
-
-        return userRepository.save(user);
-    }
-
+    // ==========================================
+    // 1. LOGIN CLASSIQUE (Email + Password)
+    // ==========================================
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        // 1. Authentifier via AuthenticationManager
+        // 1. Authentifier via Spring Security (vérifie le mot de passe)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+                        request.getEmail(),
+                        request.getPassword()));
 
         // 2. Récupérer l'utilisateur depuis la BDD
-        var user = repository.findByEmail(request.email())
-                .orElseThrow();
+        UserAccount user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        // 3. Convertir en UserDetails pour le JWT
-        UserDetails userDetails = createSpringSecurityUser(user);
-
+        // 3. UserAccount implements UserDetails now
         // 4. Générer le token
-        var jwtToken = jwtService.generateToken(userDetails);
+        // 4. Générer le token avec les rôles
+        java.util.Map<String, Object> extraClaims = new java.util.HashMap<>();
+        extraClaims.put("roles", user.getAuthorities().stream()
+                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+                .collect(java.util.stream.Collectors.toList()));
+        String jwtToken = jwtService.generateToken(extraClaims, user);
+
         return new AuthenticationResponse(jwtToken);
     }
 
-    // Méthode utilitaire pour transformer ton Entité User en UserDetails (Spring Security)
-    private UserDetails createSpringSecurityUser(User user) {
-        String roleName = user.getRole().startsWith("ROLE_") ? user.getRole() : "ROLE_" + user.getRole();
+    // ==========================================
+    // 1.1 REGISTER CLASSIQUE
+    // ==========================================
+    @Transactional
+    public AuthenticationResponse register(com.example.demo.security.dto.RegisterRequest request) {
+        // 1. Vérifier si l'email existe déjà
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Cet email est déjà utilisé.");
+        }
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(roleName))
-        );
+        // 2. Créer le UserAccount
+        UserAccount user = new UserAccount();
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(new java.util.HashSet<>(
+                java.util.Collections.singletonList(com.example.demo.security.user.Role.CANDIDAT)));
+        user.setProvider(AuthProvider.LOCAL); // Local provider
+        user.setEnabled(false); // Enable only after verification
+        String token = java.util.UUID.randomUUID().toString();
+        user.setVerificationToken(token);
+
+        UserAccount savedUser = userRepository.save(user);
+
+        // 3. Créer le profil Candidat associé (si Rôle est CANDIDAT, par défaut ici)
+        com.example.demo.candidat.model.Candidat candidat = new com.example.demo.candidat.model.Candidat();
+        candidat.setEmail(request.getEmail());
+        candidat.setPassword(savedUser.getPassword()); // redondant mais présent dans entity Candidat
+        candidat.setUser(savedUser);
+
+        // Initialiser les champs obligatoires du candidat si besoin
+        // candidat.setNomCandidatAr(request.getFullName());
+
+        candidatRepository.save(candidat);
+
+        // 4. Générer le token
+        java.util.Map<String, Object> extraClaims = new java.util.HashMap<>();
+        extraClaims.put("roles", savedUser.getAuthorities().stream()
+                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+                .collect(java.util.stream.Collectors.toList()));
+        String jwtToken = jwtService.generateToken(extraClaims, savedUser);
+
+        // 5. Envoyer l'email de vérification
+        emailService.sendVerificationEmail(user.getEmail(), token);
+
+        return new AuthenticationResponse(jwtToken);
+    }
+
+    // ==========================================
+    // 3. EMAIL VERIFICATION
+    // ==========================================
+    @Transactional
+    public void verifyEmail(String token) {
+        UserAccount user = userRepository.findAll().stream()
+                .filter(u -> token.equals(u.getVerificationToken()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Token invalide"));
+
+        user.setEnabled(true);
+        user.setVerificationToken(null);
+        userRepository.save(user);
     }
 }

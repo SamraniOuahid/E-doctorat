@@ -7,6 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.example.demo.security.dto.AuthenticationRequest;
+import com.example.demo.security.dto.AuthenticationResponse;
+import com.example.demo.security.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,7 +20,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
+
+    private final AuthService authService;
 
     /**
      * Retourne l'utilisateur actuellement connecté (via Google OAuth2).
@@ -26,10 +33,10 @@ public class AuthController {
      */
     @GetMapping("/me")
     public ResponseEntity<CurrentUserResponse> me(
-            @AuthenticationPrincipal CustomOAuth2User user
-    ) {
+            @AuthenticationPrincipal CustomOAuth2User user) {
         if (user == null) {
-            // Personne connectée → 401 pour que le front sache qu'il doit rediriger vers login
+            // Personne connectée → 401 pour que le front sache qu'il doit rediriger vers
+            // login
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
@@ -40,7 +47,7 @@ public class AuthController {
                 .collect(Collectors.toSet());
 
         // Récupération de quelques infos brutes de Google (optionnel)
-        String pictureUrl = user.getAttribute("picture");           // URL avatar Google
+        String pictureUrl = user.getAttribute("picture"); // URL avatar Google
         Boolean emailVerified = user.getAttribute("email_verified"); // peut être null
         String provider = "google";
 
@@ -51,21 +58,39 @@ public class AuthController {
                 provider,
                 pictureUrl,
                 emailVerified != null ? emailVerified : false,
-                Instant.now()   // juste pour debug / info
+                Instant.now() // juste pour debug / info
         );
 
         return ResponseEntity.ok(body);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+        System.out.println("AuthController received login request for: " + request.getEmail());
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        } catch (Exception e) {
+            System.out.println("AuthController login error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody com.example.demo.security.dto.RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
     /**
      * Endpoint de logout.
      *
-     * - Invalide la session Spring Security (mais NE DÉCONNECTE PAS le compte Google dans le navigateur).
+     * - Invalide la session Spring Security (mais NE DÉCONNECTE PAS le compte
+     * Google dans le navigateur).
      * - À appeler depuis le front (POST /api/auth/logout).
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request,
-                                       HttpServletResponse response) throws Exception {
+            HttpServletResponse response) throws Exception {
         // Invalide l'authentification Spring Security
         request.logout();
         // Optionnel : invalidation de la session HTTP
@@ -74,6 +99,12 @@ public class AuthController {
         }
         // Pas de contenu à retourner
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+        authService.verifyEmail(token);
+        return ResponseEntity.ok("Email vérifié avec succès !");
     }
 
     /**
@@ -87,6 +118,6 @@ public class AuthController {
             String provider,
             String pictureUrl,
             boolean emailVerified,
-            Instant serverTime
-    ) {}
+            Instant serverTime) {
+    }
 }
