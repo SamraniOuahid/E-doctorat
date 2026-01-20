@@ -13,9 +13,12 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
     public void sendVerificationEmail(String to, String token) {
         String subject = "Vérification de votre compte E-Doctorat";
-        String confirmationUrl = "http://localhost:5173/verify-email?token=" + token;
+        String confirmationUrl = frontendUrl + "/verify-email?token=" + token;
 
         String htmlContent = "<p>Bonjour,</p>"
                 + "<p>Merci de vous être inscrit sur E-Doctorat.</p>"

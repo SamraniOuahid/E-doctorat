@@ -10,5 +10,8 @@ import java.util.Optional;
 public interface CandidatRepository extends JpaRepository<Candidat, Long> {
 
     Optional<Candidat> findByEmail(String email);
+
+    Optional<Candidat> findByUser_Email(String email);
+
     List<Candidat> findByEtatDossier(EtatDossier etatDossier);
 }

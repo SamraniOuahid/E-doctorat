@@ -25,7 +25,6 @@ public class CandidatService {
     private final DiplomeRepository diplomeRepository;
     private final CandidatRepository candidatRepository;
 
-
     @Value("${edoctorat.candidat.max-choix:3}")
     private int maxChoix;
 
@@ -34,8 +33,7 @@ public class CandidatService {
     // ==========================================================
     public List<Sujet> searchSujets(String keyword, Long laboId, Long formationId, Long etablissementId) {
         return sujetRepository.findAll(
-                SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, etablissementId)
-        );
+                SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, etablissementId));
     }
 
     // ==========================================================
@@ -99,22 +97,34 @@ public class CandidatService {
         // Mise à jour conditionnelle (seulement si le champ n'est pas null dans le DTO)
 
         // Identifiants
-        if (dto.getCne() != null) c.setCne(dto.getCne());
-        if (dto.getCin() != null) c.setCin(dto.getCin());
+        if (dto.getCne() != null)
+            c.setCne(dto.getCne());
+        if (dto.getCin() != null)
+            c.setCin(dto.getCin());
 
         // Infos perso
-        if (dto.getNomCandidatAr() != null) c.setNomCandidatAr(dto.getNomCandidatAr());
-        if (dto.getPrenomCandidatAr() != null) c.setPrenomCandidatAr(dto.getPrenomCandidatAr());
-        if (dto.getSexe() != null) c.setSexe(dto.getSexe());
-        if (dto.getDateDeNaissance() != null) c.setDateDeNaissance(dto.getDateDeNaissance());
-        if (dto.getSituationFamiliale() != null) c.setSituationFamiliale(dto.getSituationFamiliale());
-        if (dto.getTypeDeHandiCape() != null) c.setTypeDeHandiCape(dto.getTypeDeHandiCape());
+        if (dto.getNomCandidatAr() != null)
+            c.setNomCandidatAr(dto.getNomCandidatAr());
+        if (dto.getPrenomCandidatAr() != null)
+            c.setPrenomCandidatAr(dto.getPrenomCandidatAr());
+        if (dto.getSexe() != null)
+            c.setSexe(dto.getSexe());
+        if (dto.getDateDeNaissance() != null)
+            c.setDateDeNaissance(dto.getDateDeNaissance());
+        if (dto.getSituationFamiliale() != null)
+            c.setSituationFamiliale(dto.getSituationFamiliale());
+        if (dto.getTypeDeHandiCape() != null)
+            c.setTypeDeHandiCape(dto.getTypeDeHandiCape());
 
         // Coordonnées
-        if (dto.getTelCandidat() != null) c.setTelCandidat(dto.getTelCandidat());
-        if (dto.getAdresse() != null) c.setAdresse(dto.getAdresse());
-        if (dto.getVilleDeNaissance() != null) c.setVilleDeNaissance(dto.getVilleDeNaissance());
-        if (dto.getPays() != null) c.setPays(dto.getPays());
+        if (dto.getTelCandidat() != null)
+            c.setTelCandidat(dto.getTelCandidat());
+        if (dto.getAdresse() != null)
+            c.setAdresse(dto.getAdresse());
+        if (dto.getVilleDeNaissance() != null)
+            c.setVilleDeNaissance(dto.getVilleDeNaissance());
+        if (dto.getPays() != null)
+            c.setPays(dto.getPays());
 
         return candidatRepository.save(c);
     }
@@ -133,7 +143,27 @@ public class CandidatService {
     }
 
     // fing by id
-    public Optional<Candidat> findById(Long candidatId){
+    public Optional<Candidat> findById(Long candidatId) {
         return candidatRepository.findById(candidatId);
+    }
+
+    // Get current authenticated candidat
+    public Candidat getCurrentCandidat() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName(); // email from JWT
+
+        // Try user relationship first
+        java.util.Optional<Candidat> candidatOpt = candidatRepository.findByUser_Email(email);
+        if (candidatOpt.isPresent()) {
+            return candidatOpt.get();
+        }
+
+        // Fallback to direct email lookup
+        candidatOpt = candidatRepository.findByEmail(email);
+        if (candidatOpt.isPresent()) {
+            return candidatOpt.get();
+        }
+
+        throw new RuntimeException("Profil candidat non trouvé. Email: " + email);
     }
 }
