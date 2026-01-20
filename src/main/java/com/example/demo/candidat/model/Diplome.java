@@ -34,7 +34,8 @@ public class Diplome {
     private Double moyenGenerale;
 
     @ManyToOne
-    @JoinColumn(name = "candidat_id", nullable = false)   // FK -> candidat_candidat.id [file:1]
+    @JoinColumn(name = "candidat_id", nullable = false) // FK -> candidat_candidat.id [file:1]
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Candidat candidat;
 
     @OneToMany(mappedBy = "diplome", cascade = CascadeType.ALL)

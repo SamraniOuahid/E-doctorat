@@ -113,6 +113,20 @@ public class AuthController {
         return ResponseEntity.ok("Si le compte existe et n'est pas activé, un email a été envoyé.");
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam("email") String email) {
+        authService.forgotPassword(email);
+        return ResponseEntity.ok("Si le compte existe, un email de réinitialisation a été envoyé.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword) {
+        authService.resetPassword(token, newPassword);
+        return ResponseEntity.ok("Mot de passe réinitialisé avec succès !");
+    }
+
     /**
      * DTO retourné par /api/auth/me
      * (forme propre pour que le front consomme facilement).

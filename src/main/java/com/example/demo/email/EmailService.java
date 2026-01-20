@@ -39,4 +39,30 @@ public class EmailService {
             throw new RuntimeException("Erreur lors de l'envoi de l'email", e);
         }
     }
+
+    public void sendPasswordResetEmail(String to, String token) {
+        String subject = "Réinitialisation de votre mot de passe - E-Doctorat";
+        String resetUrl = frontendUrl + "/reset-password?token=" + token;
+        System.out.println("DEBUG - Password Reset URL: " + resetUrl);
+
+        String htmlContent = "<p>Bonjour,</p>"
+                + "<p>Vous avez demandé la réinitialisation de votre mot de passe.</p>"
+                + "<p>Veuillez cliquer sur le lien ci-dessous pour changer votre mot de passe :</p>"
+                + "<p><a href=\"" + resetUrl + "\">Réinitialiser mon mot de passe</a></p>"
+                + "<p>Ce lien expirera dans 15 minutes.</p>"
+                + "<p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email.</p>";
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Erreur lors de l'envoi de l'email de réinitialisation", e);
+        }
+    }
 }

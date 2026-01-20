@@ -73,6 +73,9 @@ public class Candidat {
     @JoinColumn(name = "user_id", nullable = false)
     private com.example.demo.security.user.UserAccount user;
 
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
+    private List<Diplome> diplomes;
+
     public String getNomComplet() {
         String nom = (nomCandidatAr != null) ? nomCandidatAr : "";
         String prenom = (prenomCandidatAr != null) ? prenomCandidatAr : "";
@@ -81,5 +84,57 @@ public class Candidat {
 
     public void setPays(String pays) {
 
+    }
+
+    /**
+     * Check if profile is complete with all required fields
+     * Required fields: cin, cne, nomCandidatAr, prenomCandidatAr, dateDeNaissance,
+     * telCandidat, adresse, ville, sexe, pathPhoto, pathCv
+     */
+    public boolean isProfileComplete() {
+        return cin != null && !cin.trim().isEmpty()
+                && cne != null && !cne.trim().isEmpty()
+                && nomCandidatAr != null && !nomCandidatAr.trim().isEmpty()
+                && prenomCandidatAr != null && !prenomCandidatAr.trim().isEmpty()
+                && dateDeNaissance != null
+                && telCandidat != null && !telCandidat.trim().isEmpty()
+                && adresse != null && !adresse.trim().isEmpty()
+                && ville != null && !ville.trim().isEmpty()
+                && sexe != null && !sexe.trim().isEmpty()
+                && pathPhoto != null && !pathPhoto.trim().isEmpty()
+                && pathCv != null && !pathCv.trim().isEmpty();
+    }
+
+    /**
+     * Calculate profile completion percentage
+     */
+    public int getProfileCompletionPercentage() {
+        int totalFields = 11; // Total required fields
+        int completedFields = 0;
+
+        if (cin != null && !cin.trim().isEmpty())
+            completedFields++;
+        if (cne != null && !cne.trim().isEmpty())
+            completedFields++;
+        if (nomCandidatAr != null && !nomCandidatAr.trim().isEmpty())
+            completedFields++;
+        if (prenomCandidatAr != null && !prenomCandidatAr.trim().isEmpty())
+            completedFields++;
+        if (dateDeNaissance != null)
+            completedFields++;
+        if (telCandidat != null && !telCandidat.trim().isEmpty())
+            completedFields++;
+        if (adresse != null && !adresse.trim().isEmpty())
+            completedFields++;
+        if (ville != null && !ville.trim().isEmpty())
+            completedFields++;
+        if (sexe != null && !sexe.trim().isEmpty())
+            completedFields++;
+        if (pathPhoto != null && !pathPhoto.trim().isEmpty())
+            completedFields++;
+        if (pathCv != null && !pathCv.trim().isEmpty())
+            completedFields++;
+
+        return (completedFields * 100) / totalFields;
     }
 }

@@ -23,10 +23,11 @@ public class SecurityConfig {
                                                                                                      // CORS par défaut
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/", "/public/**", "/error").permitAll()
+                                                .requestMatchers("/", "/public/**", "/error", "/uploads/**").permitAll()
                                                 .requestMatchers("/api/auth/**").permitAll() // Authentification doit
                                                                                              // être publique
                                                                                              // (login/register)
+                                                .requestMatchers("/api/filters/**").permitAll() // Filtres publics
                                                 .requestMatchers("/api/professeurs/**").hasRole("PROFESSEUR")
                                                 .requestMatchers("/api/directeur-labo/**").hasRole("DIRECTEUR_LABO")
                                                 // ajoute d'autres rôles ici

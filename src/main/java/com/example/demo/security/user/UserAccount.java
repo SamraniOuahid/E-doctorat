@@ -32,6 +32,9 @@ public class UserAccount implements org.springframework.security.core.userdetail
 
     private String verificationToken;
 
+    private String resetPasswordToken;
+    private java.time.LocalDateTime resetPasswordTokenExpiry;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private AuthProvider provider; // GOOGLE or LOCAL
