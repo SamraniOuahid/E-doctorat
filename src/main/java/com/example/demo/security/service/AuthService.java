@@ -1,4 +1,4 @@
-feature/new-ouahid
+
 package com.example.demo.security.service;
 
 import com.example.demo.security.dto.AuthenticationRequest;
@@ -12,16 +12,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 
-package com.example.demo.security.service; // Correction du package
+
 
 import com.example.demo.security.user.*;
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-main
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +36,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final com.example.demo.email.EmailService emailService;
 
- feature/new-ouahid
+
     // ==========================================
     // 1. LOGIN CLASSIQUE (Email + Password)
     // ==========================================
@@ -83,7 +82,6 @@ public class AuthService {
 //        var jwtToken = jwtService.generateToken(userDetails);
 //        return new AuthenticationResponse(jwtToken);
 //    }
- main
 
     // ==========================================
     // 1.1 REGISTER CLASSIQUE

@@ -13,6 +13,7 @@ public class SecurityConfig {
 
         private final CustomOAuth2UserService customOAuth2UserService;
         private final com.example.demo.security.oauth2.OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+        private final com.example.demo.security.jwt.JwtAuthenticationFilter jwtAuthFilter;
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +42,9 @@ public class SecurityConfig {
                                                                                 org.springframework.http.HttpStatus.UNAUTHORIZED)));
 
                 // PAS de formLogin() → uniquement Google
+                http.addFilterBefore(jwtAuthFilter,
+                                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
                 return http.build();
         }
 
