@@ -21,15 +21,17 @@ public class CandidatController {
 
     // 1) FILTERS API
     // GET
-    // /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3
+    // /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3&professeurId=5
     @GetMapping("/sujets")
     public ResponseEntity<List<Sujet>> searchSujets(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long laboId,
             @RequestParam(required = false) Long formationId,
-            @RequestParam(required = false) Long etablissementId) {
+            @RequestParam(required = false) Long etablissementId,
+            @RequestParam(required = false) Long professeurId,
+            @RequestParam(required = false) Boolean disponible) {
 
-        List<Sujet> results = candidatService.searchSujets(keyword, laboId, formationId, etablissementId);
+        List<Sujet> results = candidatService.searchSujets(keyword, laboId, formationId, etablissementId, professeurId, disponible);
         return ResponseEntity.ok(results);
     }
 

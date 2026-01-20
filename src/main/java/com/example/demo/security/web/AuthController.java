@@ -65,9 +65,9 @@ public class AuthController {
         }
         // 2) Google OIDC default principal
         else if (principal instanceof OidcUser oidc) {
-            email = oidc.getEmail();          // from OIDC claims
-            fullName = oidc.getFullName();    // name
-            pictureUrl = oidc.getPicture();   // picture
+            email = oidc.getEmail(); // from OIDC claims
+            fullName = oidc.getFullName(); // name
+            pictureUrl = oidc.getPicture(); // picture
             Boolean ev = oidc.getEmailVerified();
             emailVerified = ev != null && ev;
             provider = "google";
@@ -96,9 +96,9 @@ public class AuthController {
         Set<String> roles = (userAccount == null || userAccount.getRoles() == null)
                 ? Set.of()
                 : userAccount.getRoles()
-                .stream()
-                .map(Role::name)
-                .collect(Collectors.toSet());
+                        .stream()
+                        .map(Role::name)
+                        .collect(Collectors.toSet());
 
         if (fullName == null && userAccount != null) {
             fullName = userAccount.getFullName();
@@ -111,8 +111,7 @@ public class AuthController {
                 provider,
                 pictureUrl,
                 emailVerified,
-                Instant.now()
-        );
+                Instant.now());
 
         return ResponseEntity.ok(body);
     }
@@ -135,11 +134,12 @@ public class AuthController {
     }
 
     /**
-     * Logout: invalide la session Spring Security (ne déconnecte pas Google du navigateur).
+     * Logout: invalide la session Spring Security (ne déconnecte pas Google du
+     * navigateur).
      */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request,
-                                       HttpServletResponse response) throws Exception {
+            HttpServletResponse response) throws Exception {
         request.logout();
         if (request.getSession(false) != null) {
             request.getSession(false).invalidate();
@@ -151,6 +151,26 @@ public class AuthController {
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         authService.verifyEmail(token);
         return ResponseEntity.ok("Email vérifié avec succès !");
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<String> resendVerification(@RequestParam("email") String email) {
+        authService.resendVerificationEmail(email);
+        return ResponseEntity.ok("Si le compte existe et n'est pas activé, un email a été envoyé.");
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam("email") String email) {
+        authService.forgotPassword(email);
+        return ResponseEntity.ok("Si le compte existe, un email de réinitialisation a été envoyé.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword) {
+        authService.resetPassword(token, newPassword);
+        return ResponseEntity.ok("Mot de passe réinitialisé avec succès !");
     }
 
     /**

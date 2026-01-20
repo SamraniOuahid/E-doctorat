@@ -13,8 +13,14 @@ public class CandidatUpdateDTO {
     private String prenomCandidatAr;
     private LocalDate dateDeNaissance;
     private String villeDeNaissance;
+    private String villeDeNaissanceAr;
     private String adresse;
+    private String adresseAr;
+    private String ville;
     private String pays;
+    private String academie;
     private String situationFamiliale;
     private String typeDeHandiCape;
+    private String pathPhoto;
+    private String pathCv;
 }
