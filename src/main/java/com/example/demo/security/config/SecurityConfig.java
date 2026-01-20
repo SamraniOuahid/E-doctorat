@@ -19,60 +19,63 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
-    private final JwtAuthenticationFilter jwtAuthFilter;
+        private final CustomOAuth2UserService customOAuth2UserService;
+        private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+        private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+        private final JwtAuthenticationFilter jwtAuthFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+                http
+                                .cors(Customizer.withDefaults())
+                                .csrf(csrf -> csrf.disable())
 
-                // allow session for oauth2 handshake; APIs still use JWT
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                                // allow session for oauth2 handshake; APIs still use JWT
+                                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/error",
-                                "/oauth2/**", "/login/**", "/login/oauth2/**").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/verify-email").permitAll()
-                        .requestMatchers("/api/auth/me").authenticated()
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/", "/error",
+                                                                "/oauth2/**", "/login/**", "/login/oauth2/**")
+                                                .permitAll()
+                                                .requestMatchers("/api/auth/login", "/api/auth/register",
+                                                                "/api/auth/verify-email", "/api/auth/forgot-password",
+                                                                "/api/auth/reset-password")
+                                                .permitAll()
+                                                .requestMatchers("/api/auth/me").authenticated()
 
-                        .requestMatchers("/api/professeurs/**").hasRole("PROFESSEUR")
-                        .requestMatchers("/api/directeur-labo/**").hasRole("DIRECTEUR_LABO")
-                        .requestMatchers("/api/scolarite/**").hasRole("SCOLARITE")
+                                                .requestMatchers("/api/professeurs/**").hasRole("PROFESSEUR")
+                                                .requestMatchers("/api/directeur-labo/**").hasRole("DIRECTEUR_LABO")
+                                                .requestMatchers("/api/scolarite/**").hasRole("SCOLARITE")
 
-                        .anyRequest().authenticated()
-                )
+                                                .anyRequest().authenticated())
 
-                .oauth2Login(oauth -> oauth
-                        .loginPage("/oauth2/authorization/google")
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler(oAuth2LoginFailureHandler)
-                )
+                                .oauth2Login(oauth -> oauth
+                                                .loginPage("/oauth2/authorization/google")
+                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                .userService(customOAuth2UserService))
+                                                .successHandler(oAuth2LoginSuccessHandler)
+                                                .failureHandler(oAuth2LoginFailureHandler))
 
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint(
+                                                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "http://localhost:9090"));
-        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(java.util.List.of("*"));
-        configuration.setAllowCredentials(true);
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+        @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "http://localhost:9090"));
+                configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(java.util.List.of("*"));
+                configuration.setAllowCredentials(true);
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 
 }
