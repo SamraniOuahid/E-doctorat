@@ -107,6 +107,12 @@ public class AuthController {
         return ResponseEntity.ok("Email vérifié avec succès !");
     }
 
+    @PostMapping("/resend-verification")
+    public ResponseEntity<String> resendVerification(@RequestParam("email") String email) {
+        authService.resendVerificationEmail(email);
+        return ResponseEntity.ok("Si le compte existe et n'est pas activé, un email a été envoyé.");
+    }
+
     /**
      * DTO retourné par /api/auth/me
      * (forme propre pour que le front consomme facilement).

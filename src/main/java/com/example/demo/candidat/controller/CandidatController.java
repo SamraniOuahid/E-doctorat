@@ -20,7 +20,8 @@ public class CandidatController {
     private final CandidatService candidatService;
 
     // 1) FILTERS API
-    // GET /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3
+    // GET
+    // /api/candidats/sujets?keyword=Java&laboId=1&formationId=2&etablissementId=3
     @GetMapping("/sujets")
     public ResponseEntity<List<Sujet>> searchSujets(
             @RequestParam(required = false) String keyword,
@@ -92,15 +93,11 @@ public class CandidatController {
 
         return candidatService.addDiplome(id, d);
     }
-    @GetMapping("/qui-suis-je")
-    public ResponseEntity<String> quiSuisJe() {
-        // On récupère l'authentification actuelle
-        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
-        return ResponseEntity.ok(
-                "Nom: " + auth.getName() + "\n" +
-                        "Rôles: " + auth.getAuthorities() + "\n" +
-                        "Est authentifié ? " + auth.isAuthenticated()
-        );
+    // GET current user's candidat profile
+    @GetMapping("/me")
+    public ResponseEntity<Candidat> getCurrentProfile() {
+        Candidat candidat = candidatService.getCurrentCandidat();
+        return ResponseEntity.ok(candidat);
     }
 }
