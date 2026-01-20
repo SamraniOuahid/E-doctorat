@@ -39,12 +39,13 @@ public class DirecteurCedService {
 
     public List<Sujet> getSujetsByFormation(Long cedId, Long formationId) {
         // 1. Créer la spécification de base (Filtres utilisateur)
-        // On met 'null' car ici le directeur ne filtre pas encore par mot-clé, juste par formation
-        Specification<Sujet> specCritere = SujetSpecification.getSujetsByFilter(null, null, formationId, null);
+        // On met 'null' car ici le directeur ne filtre pas encore par mot-clé, juste
+        // par formation
+        Specification<Sujet> specCritere = SujetSpecification.getSujetsByFilter(null, null, formationId, null, true);
 
         // 2. Créer la spécification de SÉCURITÉ (Doit appartenir au CED du directeur)
-        Specification<Sujet> specSecurite = (root, query, cb) ->
-                cb.equal(root.get("formationDoctorale").get("ced").get("id"), cedId);
+        Specification<Sujet> specSecurite = (root, query, cb) -> cb
+                .equal(root.get("formationDoctorale").get("ced").get("id"), cedId);
 
         // 3. Combiner les deux (WHERE formation = X AND ced = Y)
         return sujetRepository.findAll(specCritere.and(specSecurite));
@@ -89,7 +90,7 @@ public class DirecteurCedService {
         List<Inscription> inscrits = getInscritsByCed(cedId);
 
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             PrintWriter writer = new PrintWriter(out)) {
+                PrintWriter writer = new PrintWriter(out)) {
 
             // En-tête CSV
             writer.println("ID Inscription,Candidat ID,Sujet,Laboratoire,Etablissement,Date");
@@ -117,8 +118,7 @@ public class DirecteurCedService {
                         titreSujet.replace("\"", "'"), // Nettoyage titre
                         nomLabo,
                         nomEtab,
-                        insc.getDateDiposeDossier()
-                );
+                        insc.getDateDiposeDossier());
             }
 
             writer.flush();

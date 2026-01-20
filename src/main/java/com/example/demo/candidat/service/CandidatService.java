@@ -31,9 +31,10 @@ public class CandidatService {
     // ==========================================================
     // MODULE 1: FILTERS
     // ==========================================================
-    public List<Sujet> searchSujets(String keyword, Long laboId, Long formationId, Long etablissementId) {
+    public List<Sujet> searchSujets(String keyword, Long laboId, Long formationId, Long etablissementId,
+            Long professeurId, Boolean disponible) {
         return sujetRepository.findAll(
-                SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, etablissementId));
+                SujetSpecification.getSujetsByFilter(keyword, laboId, formationId, professeurId, disponible));
     }
 
     // ==========================================================
@@ -41,6 +42,15 @@ public class CandidatService {
     // ==========================================================
     @Transactional
     public void postuler(Long candidatId, List<Long> sujetIds) throws RuntimeException {
+        // Check if profile is complete before allowing application
+        Candidat candidat = candidatRepository.findById(candidatId)
+                .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
+
+        if (!candidat.isProfileComplete()) {
+            throw new RuntimeException(
+                    "Vous devez compléter votre profil avant de postuler. Veuillez remplir tous les champs obligatoires.");
+        }
+
         if (sujetIds == null || sujetIds.isEmpty()) {
             throw new RuntimeException("Vous devez sélectionner au moins un sujet.");
         }
@@ -121,10 +131,24 @@ public class CandidatService {
             c.setTelCandidat(dto.getTelCandidat());
         if (dto.getAdresse() != null)
             c.setAdresse(dto.getAdresse());
+        if (dto.getAdresseAr() != null)
+            c.setAdresseAr(dto.getAdresseAr());
         if (dto.getVilleDeNaissance() != null)
             c.setVilleDeNaissance(dto.getVilleDeNaissance());
+        if (dto.getVilleDeNaissanceAr() != null)
+            c.setVilleDeNaissanceAr(dto.getVilleDeNaissanceAr());
+        if (dto.getVille() != null)
+            c.setVille(dto.getVille());
         if (dto.getPays() != null)
             c.setPays(dto.getPays());
+        if (dto.getAcademie() != null)
+            c.setAcademie(dto.getAcademie());
+
+        // Files
+        if (dto.getPathPhoto() != null)
+            c.setPathPhoto(dto.getPathPhoto());
+        if (dto.getPathCv() != null)
+            c.setPathCv(dto.getPathCv());
 
         return candidatRepository.save(c);
     }

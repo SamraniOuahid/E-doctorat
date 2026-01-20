@@ -36,14 +36,12 @@ public class SecurityConfig {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/error",
-                                                                "/oauth2/**", "/login/**", "/login/oauth2/**")
+                                                                "/oauth2/**", "/login/**", "/login/oauth2/**",
+                                                                "/public/**", "/uploads/**")
                                                 .permitAll()
-                                                .requestMatchers("/api/auth/login", "/api/auth/register",
-                                                                "/api/auth/verify-email", "/api/auth/forgot-password",
-                                                                "/api/auth/reset-password")
-                                                .permitAll()
+                                                .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers("/api/filters/**").permitAll()
                                                 .requestMatchers("/api/auth/me").authenticated()
-
                                                 .requestMatchers("/api/professeurs/**").hasRole("PROFESSEUR")
                                                 .requestMatchers("/api/directeur-labo/**").hasRole("DIRECTEUR_LABO")
                                                 .requestMatchers("/api/scolarite/**").hasRole("SCOLARITE")
