@@ -7,6 +7,9 @@ import com.example.demo.candidat.specification.SujetSpecification;
 import com.example.demo.professeur.model.*;
 import com.example.demo.professeur.repository.*;
 
+import com.example.demo.security.user.UserAccount;
+import com.example.demo.security.user.UserRepository;
+import com.example.demo.directeur.ced.repository.CedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,15 @@ public class DirecteurCedService {
 
     @Autowired
     private InscriptionRepository inscriptionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CedRepository cedRepository;
+
+    @Autowired
+    private CommissionRepository commissionRepository;
 
     // =========================================================================
     // 1. GESTION DES SUJETS (Avec Specification)
@@ -127,5 +139,27 @@ public class DirecteurCedService {
         } catch (Exception e) {
             throw new RuntimeException("Erreur CSV: " + e.getMessage());
         }
+    }
+
+    // =========================================================================
+    // 5. GESTION DES COMMISSIONS
+    // =========================================================================
+
+    public List<Commission> getCommissionsByCed(Long cedId) {
+        return commissionRepository.findByLaboratoire_Ced_Id(cedId);
+    }
+
+    // =========================================================================
+    // 6. RÉSOLUTION CED ID PAR EMAIL
+    // =========================================================================
+
+    public Long getCedIdByEmail(String email) {
+        UserAccount user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé: " + email));
+
+        Ced ced = cedRepository.findByDirecteur_UserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("CED non trouvé pour le directeur: " + email));
+
+        return ced.getId();
     }
 }
