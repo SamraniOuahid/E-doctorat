@@ -22,4 +22,10 @@ public interface DirecteurLaboService {
 
     // --- Télécharger le PV global (PDF) ---
     byte[] genererPvGlobal(Long laboId);
+
+    // --- Importer des sujets via CSV ---
+    void importSujetsCsv(Long laboId, java.io.InputStream inputStream);
+
+    // --- Créer un sujet manuellement ---
+    LaboSujetDto createSujet(Long laboId, LaboSujetDto sujetDto);
 }
