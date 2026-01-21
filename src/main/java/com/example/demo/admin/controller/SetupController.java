@@ -4,7 +4,9 @@ import com.example.demo.security.user.Role;
 import com.example.demo.security.user.UserAccount;
 import com.example.demo.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +14,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Temporary endpoint to create admin user
- * DELETE THIS AFTER CREATING ADMIN
+ * Admin setup controller for initial admin user creation.
+ * Secured to ADMIN role only after initial setup.
  */
 @RestController
 @RequestMapping("/api/setup")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('ADMIN')")
+@Slf4j
 public class SetupController {
 
     private final UserRepository userRepository;
@@ -55,5 +58,6 @@ public class SetupController {
         userRepository.save(admin);
 
         return ResponseEntity.ok("Admin user created: " + email + " / password: " + password);
+
     }
 }
