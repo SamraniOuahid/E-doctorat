@@ -50,4 +50,21 @@ public class ScolariteService {
 
         return candidatRepository.save(candidat);
     }
+
+    // 4. Statistiques pour le dashboard
+    public java.util.Map<String, Object> getDashboardStats() {
+        long total = candidatRepository.count();
+        long enAttente = candidatRepository.findByEtatDossier(EtatDossier.EN_ATTENTE).size();
+        long valides = candidatRepository.findByEtatDossier(EtatDossier.VALIDE).size();
+        long rejetes = candidatRepository.findByEtatDossier(EtatDossier.REJETE).size();
+        long aCorriger = candidatRepository.findByEtatDossier(EtatDossier.A_CORRIGER).size();
+
+        return java.util.Map.of(
+            "totalCandidats", total,
+            "enAttente", enAttente,
+            "valides", valides,
+            "aCorrecter", aCorriger,
+            "rejetes", rejetes
+        );
+    }
 }

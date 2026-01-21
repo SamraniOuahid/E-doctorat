@@ -5,6 +5,7 @@ import com.example.demo.candidat.model.CandidatChoix;
 import com.example.demo.professeur.model.Examiner;
 import com.example.demo.professeur.model.Inscription;
 import com.example.demo.professeur.model.Sujet;
+import com.example.demo.professeur.model.Commission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -63,5 +64,17 @@ public class DirecteurCedController {
                 .headers(headers)
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(new InputStreamResource(stream));
+    }
+
+    // 6. Obtenir l'ID du CED de l'utilisateur connecté (par email)
+    @GetMapping("/me/id")
+    public ResponseEntity<Long> getMyCedId(@RequestParam String email) {
+        return ResponseEntity.ok(directeurCedService.getCedIdByEmail(email));
+    }
+
+    // 7. Consulter les Commissions du CED
+    @GetMapping("/{cedId}/commissions")
+    public ResponseEntity<List<Commission>> getCommissions(@PathVariable Long cedId) {
+        return ResponseEntity.ok(directeurCedService.getCommissionsByCed(cedId));
     }
 }

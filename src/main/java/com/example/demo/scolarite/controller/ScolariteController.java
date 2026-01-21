@@ -9,16 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/scolarite")
 @RequiredArgsConstructor
-// @PreAuthorize("hasRole('SCOLARITE')") // À activer quand la sécurité sera prête
 public class ScolariteController {
 
     private final ScolariteService scolariteService;
 
-    // 1. Lister les dossiers (ex: /api/scolarite/dossiers?etat=EN_ATTENTE)
+    // 1. Lister les dossiers
     @GetMapping("/dossiers")
     public ResponseEntity<List<Candidat>> getDossiers(@RequestParam(required = false) EtatDossier etat) {
         return ResponseEntity.ok(scolariteService.getAllDossiers(etat));
@@ -36,5 +36,11 @@ public class ScolariteController {
             @PathVariable Long id,
             @RequestBody ValidationDossierDto dto) {
         return ResponseEntity.ok(scolariteService.validerDossier(id, dto));
+    }
+
+    // 4. Statistiques Dashboard
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getStats() {
+        return ResponseEntity.ok(scolariteService.getDashboardStats());
     }
 }
