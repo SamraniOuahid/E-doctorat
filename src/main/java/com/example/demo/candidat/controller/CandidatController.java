@@ -31,21 +31,27 @@ public class CandidatController {
             @RequestParam(required = false) Long professeurId,
             @RequestParam(required = false) Boolean disponible) {
 
-        List<Sujet> results = candidatService.searchSujets(keyword, laboId, formationId, etablissementId, professeurId, disponible);
+        List<Sujet> results = candidatService.searchSujets(keyword, laboId, formationId, etablissementId, professeurId,
+                disponible);
         return ResponseEntity.ok(results);
     }
 
     // 2) POSTULER API (Panier)
     // POST /api/candidats/{id}/postuler
-    // Body: [1,5,9]
+    // Body: { "choix": [ { "sujetId": 1, "pathRecherche": "..." }, ... ] }
     @PostMapping("/{id}/postuler")
-    public ResponseEntity<String> postuler(@PathVariable Long id, @RequestBody List<Long> sujetIds) {
+    public ResponseEntity<String> postuler(@PathVariable Long id, @RequestBody CandidatureDTO dto) {
         try {
-            candidatService.postuler(id, sujetIds);
+            candidatService.postuler(id, dto);
             return ResponseEntity.ok("Candidature enregistrée avec succès.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/{id}/choix")
+    public ResponseEntity<List<CandidatChoix>> getChoix(@PathVariable Long id) {
+        return ResponseEntity.ok(candidatService.getChoixByCandidatId(id));
     }
 
     // 3) NOTIFICATIONS API
@@ -94,6 +100,18 @@ public class CandidatController {
         d.setMoyenGenerale(dto.moyenGenerale());
 
         return candidatService.addDiplome(id, d);
+    }
+
+    // --- UPLOAD ROUTES ---
+    @PostMapping("/upload-projet")
+    public ResponseEntity<String> uploadProjet(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            String path = candidatService.saveProjetRecherche(file);
+            return ResponseEntity.ok(path);
+        } catch (java.io.IOException e) {
+            return ResponseEntity.internalServerError().body("Erreur lors de l'upload: " + e.getMessage());
+        }
     }
 
     // GET current user's candidat profile

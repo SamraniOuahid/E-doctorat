@@ -16,10 +16,14 @@ public interface CandidatChoixRepository extends JpaRepository<CandidatChoix, Lo
     // 2. Count how many choices a candidate has made (Useful for validation)
     long countByCandidatId(Long candidatId);
 
-    // 3. Clear the basket for a candidate (Useful if they want to reset their choices)
+    // 3. Clear the basket for a candidate (Useful if they want to reset their
+    // choices)
     void deleteByCandidatId(Long candidatId);
 
     // 4. Check if a specific choice already exists (Prevent duplicates)
     boolean existsByCandidatIdAndSujetId(Long candidatId, Long sujetId);
+
     List<CandidatChoix> findBySujetIn(List<Sujet> sujets);
+
+    java.util.Optional<CandidatChoix> findByCandidatIdAndSujet_Id(Long candidatId, Long sujetId);
 }
