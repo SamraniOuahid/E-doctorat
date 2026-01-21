@@ -11,4 +11,9 @@ public interface UserRepository extends JpaRepository<UserAccount, Long> {
     Optional<UserAccount> findByVerificationToken(String verificationToken);
 
     Optional<UserAccount> findByResetPasswordToken(String resetPasswordToken);
+
+    long countByEnabled(boolean enabled);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(u) FROM UserAccount u JOIN u.roles r WHERE r = :role")
+    long countByRole(Role role);
 }

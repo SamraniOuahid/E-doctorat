@@ -14,4 +14,6 @@ public interface CandidatRepository extends JpaRepository<Candidat, Long> {
     Optional<Candidat> findByUser_Email(String email);
 
     List<Candidat> findByEtatDossier(EtatDossier etatDossier);
+
+    long countByEtatDossier(EtatDossier etatDossier);
 }

@@ -27,6 +27,28 @@ public class DirecteurLaboController {
         return directeurLaboService.getSujetsDuLabo(laboId);
     }
 
+    // POST /api/directeur-labo/{laboId}/sujets
+    @PostMapping("/{laboId}/sujets")
+    public LaboSujetDto createSujet(@PathVariable Long laboId, @RequestBody LaboSujetDto dto) {
+        return directeurLaboService.createSujet(laboId, dto);
+    }
+
+    // POST /api/directeur-labo/{laboId}/sujets/csv
+    @PostMapping(value = "/{laboId}/sujets/csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadSujetsCsv(
+            @PathVariable Long laboId,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+        try {
+            directeurLaboService.importSujetsCsv(laboId, file.getInputStream());
+            return ResponseEntity.ok("Sujets imported successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error importing CSV: " + e.getMessage());
+        }
+    }
+
     // ================== CONSULTER CANDIDATS ==================
 
     // GET /api/directeur-labo/{laboId}/candidats
@@ -34,8 +56,7 @@ public class DirecteurLaboController {
     @GetMapping("/{laboId}/candidats")
     public List<LaboCandidatDto> getCandidats(
             @PathVariable Long laboId,
-            @RequestParam(required = false) Long sujetId
-    ) {
+            @RequestParam(required = false) Long sujetId) {
         return directeurLaboService.getCandidatsDuLabo(laboId, sujetId);
     }
 
