@@ -10,42 +10,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Sujet {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(nullable = false, length = 255)
-    private String titre;
+        @Column(nullable = false, length = 255)
+        private String titre;
 
-    @Lob
-    private String description;
+        @Lob
+        private String description;
 
-    @Column(nullable = false)
-    private boolean publier;
+        @Column(nullable = false)
+        private boolean publier;
 
-    // coDirecteur_id -> professeur_professeur.id (nullable)
-    @ManyToOne
-    @JoinColumn(
-            name = "coDirecteur_id",
-            referencedColumnName = "id"
-    )
-    private ProfesseurModel coDirecteur;
+        @Column(nullable = false)
+        private boolean needSeparatedFile = false;
 
-    // formationDoctorale_id -> professeur_formationdoctorale.id
-    @ManyToOne
-    @JoinColumn(
-            name = "formationDoctorale_id",
-            referencedColumnName = "id",
-            nullable = false
-    )
-    private FormationDoctorale formationDoctorale;
+        // coDirecteur_id -> professeur_professeur.id (nullable)
+        @ManyToOne
+        @JoinColumn(name = "coDirecteur_id", referencedColumnName = "id")
+        private ProfesseurModel coDirecteur;
 
-    // professeur_id -> professeur_professeur.id
-    @ManyToOne
-    @JoinColumn(
-            name = "professeur_id",
-            referencedColumnName = "id",
-            nullable = false
-    )
-    private ProfesseurModel professeur;
+        // formationDoctorale_id -> professeur_formationdoctorale.id
+        @ManyToOne
+        @JoinColumn(name = "formationDoctorale_id", referencedColumnName = "id", nullable = false)
+        private FormationDoctorale formationDoctorale;
+
+        // professeur_id -> professeur_professeur.id
+        @ManyToOne
+        @JoinColumn(name = "professeur_id", referencedColumnName = "id", nullable = false)
+        private ProfesseurModel professeur;
 }

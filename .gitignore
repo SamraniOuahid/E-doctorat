@@ -34,5 +34,7 @@ build/
 
 # Local secrets (do not commit)
 src/main/resources/application-local.properties
+src/main/resources/application.properties
+
 
 

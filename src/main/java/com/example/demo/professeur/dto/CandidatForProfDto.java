@@ -11,6 +11,7 @@ public class CandidatForProfDto {
     private String email;
     private String sujetTitre;
     private Long sujetId;
-    private Boolean valider;   // from Inscription
-    private String remarque;   // optional
+    private Boolean valider; // from Inscription
+    private String remarque; // optional
+    private String pathRecherche;
 }

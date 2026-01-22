@@ -1,6 +1,8 @@
 package com.example.demo.candidat.service;
 
 import com.example.demo.candidat.dto.CandidatUpdateDTO;
+import com.example.demo.candidat.dto.CandidatureDTO;
+import com.example.demo.candidat.dto.ChoixDetailDTO;
 import com.example.demo.candidat.model.*;
 import com.example.demo.candidat.repository.*;
 import com.example.demo.candidat.specification.SujetSpecification;
@@ -24,9 +26,14 @@ public class CandidatService {
     private final NotificationRepository notificationRepository;
     private final DiplomeRepository diplomeRepository;
     private final CandidatRepository candidatRepository;
+    private final com.example.demo.utils.FileStorageService fileStorageService;
 
     @Value("${edoctorat.candidat.max-choix:3}")
     private int maxChoix;
+
+    public String saveProjetRecherche(org.springframework.web.multipart.MultipartFile file) throws java.io.IOException {
+        return fileStorageService.storeProjetRecherche(file);
+    }
 
     // ==========================================================
     // MODULE 1: FILTERS
@@ -41,7 +48,7 @@ public class CandidatService {
     // MODULE 2: POSTULER
     // ==========================================================
     @Transactional
-    public void postuler(Long candidatId, List<Long> sujetIds) throws RuntimeException {
+    public void postuler(Long candidatId, CandidatureDTO dto) throws RuntimeException {
         // Check if profile is complete before allowing application
         Candidat candidat = candidatRepository.findById(candidatId)
                 .orElseThrow(() -> new RuntimeException("Candidat introuvable"));
@@ -51,20 +58,22 @@ public class CandidatService {
                     "Vous devez compléter votre profil avant de postuler. Veuillez remplir tous les champs obligatoires.");
         }
 
-        if (sujetIds == null || sujetIds.isEmpty()) {
+        if (dto.choix() == null || dto.choix().isEmpty()) {
             throw new RuntimeException("Vous devez sélectionner au moins un sujet.");
         }
 
-        if (sujetIds.size() > maxChoix) {
+        if (dto.choix().size() > maxChoix) {
             throw new RuntimeException("Erreur: Vous ne pouvez postuler qu'à " + maxChoix + " sujets maximum.");
         }
 
-        List<Sujet> sujets = sujetRepository.findAllById(sujetIds);
-        if (sujets.size() != sujetIds.size()) {
-            throw new RuntimeException("Erreur: Certains sujets sélectionnés sont introuvables.");
+        if (choixRepository.countByCandidatId(candidatId) > 0) {
+            throw new RuntimeException("Vous avez déjà soumis votre candidature. Elle ne peut plus être modifiée.");
         }
 
-        for (Sujet sujet : sujets) {
+        for (ChoixDetailDTO detail : dto.choix()) {
+            Sujet sujet = sujetRepository.findById(detail.sujetId())
+                    .orElseThrow(() -> new RuntimeException("Sujet introuvable ID: " + detail.sujetId()));
+
             if (!sujet.isPublier()) {
                 throw new RuntimeException("Le sujet '" + sujet.getTitre() + "' n'est plus disponible.");
             }
@@ -72,8 +81,13 @@ public class CandidatService {
             CandidatChoix choix = new CandidatChoix();
             choix.setCandidatId(candidatId);
             choix.setSujet(sujet);
+            choix.setPathRecherche(detail.pathRecherche());
             choixRepository.save(choix);
         }
+    }
+
+    public List<CandidatChoix> getChoixByCandidatId(Long candidatId) {
+        return choixRepository.findByCandidatId(candidatId);
     }
 
     // ==========================================================

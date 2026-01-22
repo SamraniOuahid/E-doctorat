@@ -108,10 +108,8 @@ public class AuthService {
         // ==========================================
         @Transactional
         public void verifyEmail(String token) {
-                UserAccount user = userRepository.findAll().stream()
-                                .filter(u -> token.equals(u.getVerificationToken()))
-                                .findFirst()
-                                .orElseThrow(() -> new RuntimeException("Token invalide"));
+                UserAccount user = userRepository.findByVerificationToken(token)
+                                .orElseThrow(() -> new RuntimeException("Token invalide ou lien expiré"));
 
                 user.setEnabled(true);
                 user.setVerificationToken(null);
