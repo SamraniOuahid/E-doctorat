@@ -122,4 +122,29 @@ public class FileStorageService {
             throw new IOException("Seuls les fichiers PDF sont acceptés pour les CV");
         }
     }
+
+    /**
+     * Store a Diploma file
+     */
+    public String storeDiplome(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("Le fichier est vide");
+        }
+        return storeFile(file, "diplomes");
+    }
+
+    /**
+     * Store a Research Proposal file
+     */
+    public String storeProjetRecherche(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("Le fichier est vide");
+        }
+        // Validate PDF type
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("application/pdf")) {
+            throw new IOException("Seuls les fichiers PDF sont acceptés pour le projet de recherche");
+        }
+        return storeFile(file, "projets");
+    }
 }

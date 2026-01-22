@@ -25,31 +25,46 @@ public class DirecteurCedController {
     private DirecteurCedService directeurCedService;
 
     // 1. Consulter les Sujets d'une formation du CED
+    // 1. Consulter les Sujets d'une formation du CED
     @GetMapping("/{cedId}/formations/{formationId}/sujets")
-    public ResponseEntity<List<Sujet>> getSujets(
+    public ResponseEntity<org.springframework.data.domain.Page<Sujet>> getSujets(
             @PathVariable Long cedId,
-            @PathVariable Long formationId) {
-        return ResponseEntity.ok(directeurCedService.getSujetsByFormation(cedId, formationId));
+            @PathVariable Long formationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(directeurCedService.getSujetsByFormation(cedId, formationId, pageable));
     }
 
     // 2. Consulter les Candidats d'une formation (via leurs postulations)
     @GetMapping("/{cedId}/formations/{formationId}/candidats")
-    public ResponseEntity<List<CandidatChoix>> getCandidats(
+    public ResponseEntity<org.springframework.data.domain.Page<CandidatChoix>> getCandidats(
             @PathVariable Long cedId,
-            @PathVariable Long formationId) {
-        return ResponseEntity.ok(directeurCedService.getCandidatsByFormation(cedId, formationId));
+            @PathVariable Long formationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(directeurCedService.getCandidatsByFormation(cedId, formationId, pageable));
     }
 
     // 3. Consulter les Résultats (Notes/Décisions)
     @GetMapping("/{cedId}/resultats")
-    public ResponseEntity<List<Examiner>> getResultats(@PathVariable Long cedId) {
-        return ResponseEntity.ok(directeurCedService.getResultatsByCed(cedId));
+    public ResponseEntity<org.springframework.data.domain.Page<Examiner>> getResultats(
+            @PathVariable Long cedId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(directeurCedService.getResultatsByCed(cedId, pageable));
     }
 
     // 4. Consulter les Inscrits (Validés)
     @GetMapping("/{cedId}/inscrits")
-    public ResponseEntity<List<Inscription>> getInscrits(@PathVariable Long cedId) {
-        return ResponseEntity.ok(directeurCedService.getInscritsByCed(cedId));
+    public ResponseEntity<org.springframework.data.domain.Page<Inscription>> getInscrits(
+            @PathVariable Long cedId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(directeurCedService.getInscritsByCed(cedId, pageable));
     }
 
     // 5. Télécharger le rapport d'inscription (CSV)
@@ -74,7 +89,11 @@ public class DirecteurCedController {
 
     // 7. Consulter les Commissions du CED
     @GetMapping("/{cedId}/commissions")
-    public ResponseEntity<List<Commission>> getCommissions(@PathVariable Long cedId) {
-        return ResponseEntity.ok(directeurCedService.getCommissionsByCed(cedId));
+    public ResponseEntity<org.springframework.data.domain.Page<Commission>> getCommissions(
+            @PathVariable Long cedId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(directeurCedService.getCommissionsByCed(cedId, pageable));
     }
 }

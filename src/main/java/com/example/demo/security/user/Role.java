@@ -5,6 +5,7 @@ public enum Role {
     PROFESSEUR,
     DIRECTEUR_LABO,
     DIRECTEUR_CED,
+    DIRECTEUR_POLE,
     SCOLARITE,
     ADMIN
 }

@@ -49,17 +49,22 @@ public class DirecteurCedService {
     // 1. GESTION DES SUJETS (Avec Specification)
     // =========================================================================
 
-    public List<Sujet> getSujetsByFormation(Long cedId, Long formationId) {
-        // 1. Créer la spécification de base (Filtres utilisateur)
-        // On met 'null' car ici le directeur ne filtre pas encore par mot-clé, juste
-        // par formation
-        Specification<Sujet> specCritere = SujetSpecification.getSujetsByFilter(null, null, formationId, null, true);
+    // =========================================================================
+    // 1. GESTION DES SUJETS (Avec Specification)
+    // =========================================================================
 
-        // 2. Créer la spécification de SÉCURITÉ (Doit appartenir au CED du directeur)
+    public org.springframework.data.domain.Page<Sujet> getSujetsByFormation(Long cedId, Long formationId, org.springframework.data.domain.Pageable pageable) {
+        Specification<Sujet> specCritere = SujetSpecification.getSujetsByFilter(null, null, formationId, null, true);
         Specification<Sujet> specSecurite = (root, query, cb) -> cb
                 .equal(root.get("formationDoctorale").get("ced").get("id"), cedId);
+        return sujetRepository.findAll(specCritere.and(specSecurite), pageable);
+    }
 
-        // 3. Combiner les deux (WHERE formation = X AND ced = Y)
+    public List<Sujet> getSujetsByFormation(Long cedId, Long formationId) {
+        // ... kept for internal use ...
+        Specification<Sujet> specCritere = SujetSpecification.getSujetsByFilter(null, null, formationId, null, true);
+        Specification<Sujet> specSecurite = (root, query, cb) -> cb
+                .equal(root.get("formationDoctorale").get("ced").get("id"), cedId);
         return sujetRepository.findAll(specCritere.and(specSecurite));
     }
 
@@ -67,16 +72,23 @@ public class DirecteurCedService {
     // 2. GESTION DES CANDIDATURES
     // =========================================================================
 
-    public List<CandidatChoix> getCandidatsByFormation(Long cedId, Long formationId) {
-        // Etape 1 : On récupère les sujets valides de cette formation
+    public org.springframework.data.domain.Page<CandidatChoix> getCandidatsByFormation(Long cedId, Long formationId, org.springframework.data.domain.Pageable pageable) {
+        // Etape 1 : On récupère les sujets valides de cette formation (Without pagination for the filter list)
         List<Sujet> sujetsDeLaFormation = getSujetsByFormation(cedId, formationId);
 
         if (sujetsDeLaFormation.isEmpty()) {
-            return List.of();
+            return org.springframework.data.domain.Page.empty(pageable);
         }
 
-        // Etape 2 : On cherche tous les choix qui pointent vers ces sujets
-        // Utilise: findBySujetIn(List<Sujet> sujets) dans CandidatChoixRepository
+        // Etape 2 : On cherche tous les choix qui pointent vers ces sujets (Paginated)
+        return candidatChoixRepository.findBySujetIn(sujetsDeLaFormation, pageable);
+    }
+    
+    public List<CandidatChoix> getCandidatsByFormation(Long cedId, Long formationId) {
+        List<Sujet> sujetsDeLaFormation = getSujetsByFormation(cedId, formationId);
+        if (sujetsDeLaFormation.isEmpty()) {
+            return List.of();
+        }
         return candidatChoixRepository.findBySujetIn(sujetsDeLaFormation);
     }
 
@@ -84,8 +96,11 @@ public class DirecteurCedService {
     // 3. GESTION DES RÉSULTATS (Examiner)
     // =========================================================================
 
+    public org.springframework.data.domain.Page<Examiner> getResultatsByCed(Long cedId, org.springframework.data.domain.Pageable pageable) {
+        return examinerRepository.findBySujet_FormationDoctorale_Ced_Id(cedId, pageable);
+    }
+
     public List<Examiner> getResultatsByCed(Long cedId) {
-        // Utilise la méthode magique dans ExaminerRepository
         return examinerRepository.findBySujet_FormationDoctorale_Ced_Id(cedId);
     }
 
@@ -93,8 +108,11 @@ public class DirecteurCedService {
     // 4. GESTION DES INSCRIPTIONS + CSV
     // =========================================================================
 
+    public org.springframework.data.domain.Page<Inscription> getInscritsByCed(Long cedId, org.springframework.data.domain.Pageable pageable) {
+        return inscriptionRepository.findBySujet_FormationDoctorale_Ced_Id(cedId, pageable);
+    }
+
     public List<Inscription> getInscritsByCed(Long cedId) {
-        // Utilise la méthode magique dans InscriptionRepository
         return inscriptionRepository.findBySujet_FormationDoctorale_Ced_Id(cedId);
     }
 
@@ -144,6 +162,10 @@ public class DirecteurCedService {
     // =========================================================================
     // 5. GESTION DES COMMISSIONS
     // =========================================================================
+
+    public org.springframework.data.domain.Page<Commission> getCommissionsByCed(Long cedId, org.springframework.data.domain.Pageable pageable) {
+        return commissionRepository.findByLaboratoire_Ced_Id(cedId, pageable);
+    }
 
     public List<Commission> getCommissionsByCed(Long cedId) {
         return commissionRepository.findByLaboratoire_Ced_Id(cedId);

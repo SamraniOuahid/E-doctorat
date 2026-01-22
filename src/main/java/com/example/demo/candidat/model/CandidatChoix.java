@@ -40,4 +40,7 @@ public class CandidatChoix {
     // Optional: It is good practice to know WHEN they applied
     @Column(name = "date_choix")
     private LocalDateTime dateChoix = LocalDateTime.now();
+
+    @Column(name = "path_recherche")
+    private String pathRecherche;
 }

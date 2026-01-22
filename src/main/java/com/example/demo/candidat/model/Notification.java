@@ -3,11 +3,14 @@ package com.example.demo.candidat.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "candidat_notification")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @Setter
 public class Notification {
@@ -16,29 +19,30 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String type; // ex: "SUJET_ASSIGNE", "RESULTAT_PUBLIE", etc.
-
-    public void setType(String type) {
         this.type = type;
     }
+    private String type; // Legacy field, kept for compatibility
 
     @ManyToOne
     @JoinColumn(name = "candidat_id", nullable = false)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Candidat candidat;
 
-    public void setCandidat(Candidat candidat) {
         this.candidat = candidat;
     }
 
+    @Column(length = 500)
+    private String message;
 
-    // Optionnel : si tu crées les entités Commission et Sujet
-    // @ManyToOne
-    // @JoinColumn(name = "commission_id")
-    // private Commission commission;
-    //
-    // @ManyToOne
-    // @JoinColumn(name = "sujet_id")
-    // private Sujet sujet;
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean lue = false; // Read status
+
+    @Column(nullable = false)
+    @Builder.Default
+    private LocalDateTime dateCreation = LocalDateTime.now();
+
+    @Column(length = 50)
+    private String typeNotification; // "RESULT_LP", "RESULT_LA", "PHASE_CHANGE", etc.
 }
+

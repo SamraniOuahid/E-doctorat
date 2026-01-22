@@ -44,7 +44,7 @@ public class UserAccount implements org.springframework.security.core.userdetail
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "sec_user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
+    @Column(name = "role", length = 20)
     private Set<Role> roles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)

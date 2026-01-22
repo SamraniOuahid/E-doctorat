@@ -31,4 +31,7 @@ public class CandidatForProfDto {
     public void setValider(Boolean valider) { this.valider = valider; }
     public String getRemarque() { return remarque; }
     public void setRemarque(String remarque) { this.remarque = remarque; }
+    private Boolean valider; // from Inscription
+    private String remarque; // optional
+    private String pathRecherche;
 }

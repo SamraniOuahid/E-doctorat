@@ -3,6 +3,7 @@ package com.example.demo.professeur.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.example.demo.security.user.UserAccount;
 
 @Entity
 @Table(name = "professeur")
@@ -78,4 +79,12 @@ public class ProfesseurModel {
     public void setNom(String nom) { this.nom = nom; }
     public String getPrenom() { return prenom; }
     public void setPrenom(String prenom) { this.prenom = prenom; }
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private UserAccount user;
+
+    public String getNomComplet() {
+        return user != null ? user.getFullName() : "";
+    }
+
 }

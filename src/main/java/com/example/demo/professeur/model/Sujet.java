@@ -72,4 +72,34 @@ public class Sujet {
     public void setFormationDoctorale(FormationDoctorale formationDoctorale) { this.formationDoctorale = formationDoctorale; }
     public ProfesseurModel getProfesseur() { return professeur; }
     public void setProfesseur(ProfesseurModel professeur) { this.professeur = professeur; }
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(nullable = false, length = 255)
+        private String titre;
+
+        @Lob
+        private String description;
+
+        @Column(nullable = false)
+        private boolean publier;
+
+        @Column(nullable = false)
+        private boolean needSeparatedFile = false;
+
+        // coDirecteur_id -> professeur_professeur.id (nullable)
+        @ManyToOne
+        @JoinColumn(name = "coDirecteur_id", referencedColumnName = "id")
+        private ProfesseurModel coDirecteur;
+
+        // formationDoctorale_id -> professeur_formationdoctorale.id
+        @ManyToOne
+        @JoinColumn(name = "formationDoctorale_id", referencedColumnName = "id", nullable = false)
+        private FormationDoctorale formationDoctorale;
+
+        // professeur_id -> professeur_professeur.id
+        @ManyToOne
+        @JoinColumn(name = "professeur_id", referencedColumnName = "id", nullable = false)
+        private ProfesseurModel professeur;
 }
