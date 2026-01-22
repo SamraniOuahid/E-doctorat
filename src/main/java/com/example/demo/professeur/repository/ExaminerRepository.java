@@ -15,4 +15,5 @@ public interface ExaminerRepository extends JpaRepository<Examiner, Long> {
     @Query("SELECT e FROM Examiner e WHERE e.sujet.formationDoctorale.ced.id = :cedId")
     List<Examiner> findResultsByCed(@Param("cedId") Long cedId);
     List<Examiner> findBySujet_FormationDoctorale_Ced_Id(Long cedId);
+    org.springframework.data.domain.Page<Examiner> findBySujet_FormationDoctorale_Ced_Id(Long cedId, org.springframework.data.domain.Pageable pageable);
 }

@@ -57,66 +57,90 @@ public class DirecteurPoleServiceImpl implements DirecteurPoleService {
     }
 
     @Override
-    public List<PoleCandidatDto> getAllCandidats(Long formationId) {
-        log.debug("Fetching all candidats, formationId={}", formationId);
+    public org.springframework.data.domain.Page<PoleCandidatDto> getAllCandidats(Long formationId, org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching all candidats (paginated), formationId={}", formationId);
         
-        // Get all inscriptions to map candidats with their sujet info
-        List<Inscription> inscriptions = inscriptionRepository.findAll();
-        
-        // If formationId is provided, filter inscriptions by formation
+        org.springframework.data.domain.Page<Inscription> page;
         if (formationId != null) {
-            inscriptions = inscriptions.stream()
-                .filter(i -> i.getSujet() != null 
-                    && i.getSujet().getFormationDoctorale() != null
-                    && formationId.equals(i.getSujet().getFormationDoctorale().getId()))
-                .collect(Collectors.toList());
+            page = inscriptionRepository.findBySujet_FormationDoctorale_Id(formationId, pageable);
+        } else {
+            page = inscriptionRepository.findAll(pageable);
         }
         
-        return inscriptions.stream()
-                .map(this::mapInscriptionToPoleCandidatDto)
-                .collect(Collectors.toList());
+        return page.map(this::mapInscriptionToPoleCandidatDto);
+    }
+
+    // Keep non-paginated for internal use/exports
+    public List<PoleCandidatDto> getAllCandidats(Long formationId) {
+         // ... implementation for export ...
+         // We can reuse the logic but for now let's keep the original one or adapt if needed.
+         // Since the interface signature changed for the public one, we might need to rename or keep this private/protected if not in interface.
+         // Actually, the interface removed this method signature (replaced by paginated).
+         // But `exportListePrincipaleCSV` uses `getAllCandidats(null)`.
+         // We should overload it or keep a private helper.
+         return this.getAllCandidats(formationId, org.springframework.data.domain.Pageable.unpaged()).getContent();
     }
 
     @Override
-    public List<PoleSujetDto> getAllSujets(Long formationId, Long laboId) {
-        log.debug("Fetching all sujets, formationId={}, laboId={}", formationId, laboId);
-        List<Sujet> sujets;
+    public org.springframework.data.domain.Page<PoleSujetDto> getAllSujets(Long formationId, Long laboId, org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching all sujets (paginated), formationId={}, laboId={}", formationId, laboId);
+        org.springframework.data.domain.Page<Sujet> page;
         
         if (formationId != null && laboId != null) {
-            sujets = sujetRepository.findByFormationDoctorale_IdAndProfesseur_Laboratoire_Id(formationId, laboId);
+            page = sujetRepository.findByFormationDoctorale_IdAndProfesseur_Laboratoire_Id(formationId, laboId, pageable);
         } else if (formationId != null) {
-            sujets = sujetRepository.findByFormationDoctorale_Id(formationId);
+            page = sujetRepository.findByFormationDoctorale_Id(formationId, pageable);
         } else if (laboId != null) {
-            sujets = sujetRepository.findByProfesseur_Laboratoire_Id(laboId);
+            page = sujetRepository.findByProfesseur_Laboratoire_Id(laboId, pageable);
         } else {
-            sujets = sujetRepository.findAll();
+            page = sujetRepository.findAll(pageable);
         }
         
-        return sujets.stream()
-                .map(this::mapToPoleSujetDto)
-                .collect(Collectors.toList());
+        return page.map(this::mapToPoleSujetDto);
+    }
+    
+    // Internal helper for export
+    private List<PoleSujetDto> getAllSujetsList(Long formationId, Long laboId) {
+         return this.getAllSujets(formationId, laboId, org.springframework.data.domain.Pageable.unpaged()).getContent();
     }
 
     @Override
+    public org.springframework.data.domain.Page<PoleResultatDto> getResultats(org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching all resultats (paginated)");
+        return inscriptionRepository.findAll(pageable)
+                .map(this::mapToPoleResultatDto);
+    }
+    
+
     public List<PoleResultatDto> getResultats() {
-        log.debug("Fetching all resultats");
         return inscriptionRepository.findAll().stream()
                 .map(this::mapToPoleResultatDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    public org.springframework.data.domain.Page<PoleResultatDto> getListePrincipale(org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching liste principale (paginated)");
+        return inscriptionRepository.findByValiderTrue(pageable)
+                .map(this::mapToPoleResultatDto);
+    }
+
+    @Override
     public List<PoleResultatDto> getListePrincipale() {
-        log.debug("Fetching liste principale (accepted)");
         return inscriptionRepository.findByValiderTrue().stream()
                 .map(this::mapToPoleResultatDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    public org.springframework.data.domain.Page<PoleResultatDto> getListeAttente(org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching liste attente (paginated)");
+        return inscriptionRepository.findByValiderFalseOrNull(pageable)
+                .map(this::mapToPoleResultatDto);
+    }
+
+    @Override
     public List<PoleResultatDto> getListeAttente() {
-        log.debug("Fetching liste attente");
-        // Liste attente = inscriptions non validées mais avec candidature active
         return inscriptionRepository.findAll().stream()
                 .filter(i -> !Boolean.TRUE.equals(i.getValider()))
                 .map(this::mapToPoleResultatDto)
@@ -124,8 +148,14 @@ public class DirecteurPoleServiceImpl implements DirecteurPoleService {
     }
 
     @Override
+    public org.springframework.data.domain.Page<PoleInscriptionDto> getInscriptions(org.springframework.data.domain.Pageable pageable) {
+        log.debug("Fetching all inscriptions (paginated)");
+        return inscriptionRepository.findByValiderTrue(pageable)
+                .map(this::mapToPoleInscriptionDto);
+    }
+    
+
     public List<PoleInscriptionDto> getInscriptions() {
-        log.debug("Fetching all inscriptions");
         return inscriptionRepository.findByValiderTrue().stream()
                 .map(this::mapToPoleInscriptionDto)
                 .collect(Collectors.toList());

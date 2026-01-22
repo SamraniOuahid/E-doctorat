@@ -29,47 +29,65 @@ public class DirecteurPoleController {
 
     // Candidats
     @GetMapping("/candidats")
-    public ResponseEntity<List<PoleCandidatDto>> getCandidats(
-            @RequestParam(required = false) Long formationId) {
-        log.debug("Directeur Pole requesting candidats, formationId={}", formationId);
-        return ResponseEntity.ok(service.getAllCandidats(formationId));
+    public ResponseEntity<org.springframework.data.domain.Page<PoleCandidatDto>> getCandidats(
+            @RequestParam(required = false) Long formationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting candidats (page={}, size={}), formationId={}", page, size, formationId);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getAllCandidats(formationId, pageable));
     }
 
     // Sujets
     @GetMapping("/sujets")
-    public ResponseEntity<List<PoleSujetDto>> getSujets(
+    public ResponseEntity<org.springframework.data.domain.Page<PoleSujetDto>> getSujets(
             @RequestParam(required = false) Long formationId,
-            @RequestParam(required = false) Long laboId) {
-        log.debug("Directeur Pole requesting sujets, formationId={}, laboId={}", formationId, laboId);
-        return ResponseEntity.ok(service.getAllSujets(formationId, laboId));
+            @RequestParam(required = false) Long laboId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting sujets (page={}, size={}), formationId={}, laboId={}", page, size, formationId, laboId);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getAllSujets(formationId, laboId, pageable));
     }
 
     // Resultats
     @GetMapping("/resultats")
-    public ResponseEntity<List<PoleResultatDto>> getResultats() {
-        log.debug("Directeur Pole requesting resultats");
-        return ResponseEntity.ok(service.getResultats());
+    public ResponseEntity<org.springframework.data.domain.Page<PoleResultatDto>> getResultats(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting resultats (page={}, size={})", page, size);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getResultats(pageable));
     }
 
     // Liste Principale (admis)
     @GetMapping("/resultats/principales")
-    public ResponseEntity<List<PoleResultatDto>> getListePrincipale() {
-        log.debug("Directeur Pole requesting liste principale");
-        return ResponseEntity.ok(service.getListePrincipale());
+    public ResponseEntity<org.springframework.data.domain.Page<PoleResultatDto>> getListePrincipale(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting liste principale (page={}, size={})", page, size);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getListePrincipale(pageable));
     }
 
     // Liste d'attente
     @GetMapping("/resultats/attente")
-    public ResponseEntity<List<PoleResultatDto>> getListeAttente() {
-        log.debug("Directeur Pole requesting liste attente");
-        return ResponseEntity.ok(service.getListeAttente());
+    public ResponseEntity<org.springframework.data.domain.Page<PoleResultatDto>> getListeAttente(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting liste attente (page={}, size={})", page, size);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getListeAttente(pageable));
     }
 
     // Inscriptions
     @GetMapping("/inscriptions")
-    public ResponseEntity<List<PoleInscriptionDto>> getInscriptions() {
-        log.debug("Directeur Pole requesting inscriptions");
-        return ResponseEntity.ok(service.getInscriptions());
+    public ResponseEntity<org.springframework.data.domain.Page<PoleInscriptionDto>> getInscriptions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Directeur Pole requesting inscriptions (page={}, size={})", page, size);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(service.getInscriptions(pageable));
     }
 
     // Télécharger rapport inscription

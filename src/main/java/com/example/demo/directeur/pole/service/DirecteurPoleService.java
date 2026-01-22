@@ -10,19 +10,25 @@ public interface DirecteurPoleService {
     // Dashboard stats
     PoleStatsDto getStats();
 
-    // Candidats with optional filter
-    List<PoleCandidatDto> getAllCandidats(Long formationId);
+    // Candidats
+    org.springframework.data.domain.Page<PoleCandidatDto> getAllCandidats(Long formationId, org.springframework.data.domain.Pageable pageable);
 
-    // Sujets with optional filters
-    List<PoleSujetDto> getAllSujets(Long formationId, Long laboId);
+    // Sujets
+    org.springframework.data.domain.Page<PoleSujetDto> getAllSujets(Long formationId, Long laboId, org.springframework.data.domain.Pageable pageable);
 
     // Resultats
-    List<PoleResultatDto> getResultats();
+    org.springframework.data.domain.Page<PoleResultatDto> getResultats(org.springframework.data.domain.Pageable pageable);
+    
+    // Listes
+    org.springframework.data.domain.Page<PoleResultatDto> getListePrincipale(org.springframework.data.domain.Pageable pageable);
+    org.springframework.data.domain.Page<PoleResultatDto> getListeAttente(org.springframework.data.domain.Pageable pageable);
+    
+    // Inscriptions
+    org.springframework.data.domain.Page<PoleInscriptionDto> getInscriptions(org.springframework.data.domain.Pageable pageable);
+    
+    // Non-paginated versions for export/internal use if needed
     List<PoleResultatDto> getListePrincipale();
     List<PoleResultatDto> getListeAttente();
-
-    // Inscriptions
-    List<PoleInscriptionDto> getInscriptions();
 
     // Formations doctorales
     List<PoleFormationDto> getFormations();

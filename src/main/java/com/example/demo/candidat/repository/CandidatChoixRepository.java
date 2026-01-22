@@ -24,6 +24,8 @@ public interface CandidatChoixRepository extends JpaRepository<CandidatChoix, Lo
     boolean existsByCandidatIdAndSujetId(Long candidatId, Long sujetId);
 
     List<CandidatChoix> findBySujetIn(List<Sujet> sujets);
+    org.springframework.data.domain.Page<CandidatChoix> findBySujetIn(List<Sujet> sujets, org.springframework.data.domain.Pageable pageable);
+
 
     java.util.Optional<CandidatChoix> findByCandidatIdAndSujet_Id(Long candidatId, Long sujetId);
 }

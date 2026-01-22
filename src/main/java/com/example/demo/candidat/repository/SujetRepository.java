@@ -20,4 +20,9 @@ public interface SujetRepository extends JpaRepository<Sujet, Long>, JpaSpecific
 
     // Combined filter: formation + labo
     List<Sujet> findByFormationDoctorale_IdAndProfesseur_Laboratoire_Id(Long formationId, Long laboId);
+
+    // Paginated versions
+    org.springframework.data.domain.Page<Sujet> findByFormationDoctorale_Id(Long formationId, org.springframework.data.domain.Pageable pageable);
+    org.springframework.data.domain.Page<Sujet> findByProfesseur_Laboratoire_Id(Long laboId, org.springframework.data.domain.Pageable pageable);
+    org.springframework.data.domain.Page<Sujet> findByFormationDoctorale_IdAndProfesseur_Laboratoire_Id(Long formationId, Long laboId, org.springframework.data.domain.Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package com.example.demo.scolarite.controller;
 
 import com.example.demo.scolarite.dto.ScolariteCandidatDto;
+import com.example.demo.scolarite.dto.ScolariteDossierDto;
 import com.example.demo.scolarite.service.ScolariteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,27 +25,23 @@ public class ScolariteController {
     }
 
     @GetMapping("/dossiers")
-    public ResponseEntity<?> getDossiers(@RequestParam(required = false) String etat) {
-        return ResponseEntity.ok(scolariteService.getMyLabDossiers(etat));
-    }
-
-    @GetMapping("/dossiers/{id}")
-    public ResponseEntity<?> getDossierDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(scolariteService.getDossierDetail(id));
-    }
-
-    @PutMapping("/dossiers/{id}/validation")
-    public ResponseEntity<?> validerDossier(
-            @PathVariable Long id,
-            @RequestBody java.util.Map<String, String> validationData) {
-        return ResponseEntity.ok(scolariteService.validerDossier(id, validationData));
+    public ResponseEntity<org.springframework.data.domain.Page<ScolariteDossierDto>> getDossiers(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String etat,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(scolariteService.getAllDossiers(search, etat, pageable));
     }
 
     @GetMapping("/candidats")
-    public ResponseEntity<List<ScolariteCandidatDto>> getCandidats(
+    public ResponseEntity<org.springframework.data.domain.Page<ScolariteCandidatDto>> getCandidats(
             @RequestParam(required = false) String cne,
-            @RequestParam(required = false) Long formationId) {
-        return ResponseEntity.ok(scolariteService.getMyLabCandidats(cne, formationId));
+            @RequestParam(required = false) Long formationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(scolariteService.getMyLabCandidats(cne, formationId, pageable));
     }
     
     @GetMapping("/labo-info")
