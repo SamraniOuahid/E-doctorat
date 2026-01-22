@@ -19,6 +19,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+        this.type = type;
+    }
     private String type; // Legacy field, kept for compatibility
 
     @ManyToOne
@@ -26,7 +28,9 @@ public class Notification {
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Candidat candidat;
 
-    // Enhanced fields for better notification management
+        this.candidat = candidat;
+    }
+
     @Column(length = 500)
     private String message;
 

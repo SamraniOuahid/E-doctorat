@@ -19,7 +19,8 @@ public class Laboratoire {
     private String nomLaboratoire;
 
     // POSTGRESQL FIX
-    @Lob
+    // POSTGRESQL FIX: Use TEXT, not @Lob to avoid OID error
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(length = 100)
@@ -45,4 +46,22 @@ public class Laboratoire {
     @JoinColumn(name = "etablissement_id", referencedColumnName = "idEtablissement", nullable = false)
     @JsonIgnoreProperties("laboratoires")
     private Etablissement etablissement;
+
+    // --- Manual Getters/Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNomLaboratoire() { return nomLaboratoire; }
+    public void setNomLaboratoire(String nomLaboratoire) { this.nomLaboratoire = nomLaboratoire; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getPathImage() { return pathImage; }
+    public void setPathImage(String pathImage) { this.pathImage = pathImage; }
+    public String getInitial() { return initial; }
+    public void setInitial(String initial) { this.initial = initial; }
+    public Ced getCed() { return ced; }
+    public void setCed(Ced ced) { this.ced = ced; }
+    public ProfesseurModel getDirecteur() { return directeur; }
+    public void setDirecteur(ProfesseurModel directeur) { this.directeur = directeur; }
+    public Etablissement getEtablissement() { return etablissement; }
+    public void setEtablissement(Etablissement etablissement) { this.etablissement = etablissement; }
 }

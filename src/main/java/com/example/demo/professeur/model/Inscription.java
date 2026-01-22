@@ -35,4 +35,18 @@ public class Inscription {
     @ManyToOne
     @JoinColumn(name = "sujet_id", referencedColumnName = "id", nullable = false)
     private Sujet sujet;
+
+    // --- Manual Getters/Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Date getDateDiposeDossier() { return dateDiposeDossier; }
+    public void setDateDiposeDossier(Date dateDiposeDossier) { this.dateDiposeDossier = dateDiposeDossier; }
+    public String getRemarque() { return remarque; }
+    public void setRemarque(String remarque) { this.remarque = remarque; }
+    public Boolean getValider() { return valider; }
+    public void setValider(Boolean valider) { this.valider = valider; }
+    public Candidat getCandidat() { return candidat; }
+    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
+    public Sujet getSujet() { return sujet; }
+    public void setSujet(Sujet sujet) { this.sujet = sujet; }
 }

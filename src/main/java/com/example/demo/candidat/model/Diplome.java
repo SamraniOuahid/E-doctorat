@@ -33,6 +33,10 @@ public class Diplome {
     // moyen_generale (double) dans la BD
     private Double moyenGenerale;
 
+    public void setMoyenGenerale(Double moyenGenerale) {
+        this.moyenGenerale = moyenGenerale;
+    }
+
     @ManyToOne
     @JoinColumn(name = "candidat_id", nullable = false) // FK -> candidat_candidat.id [file:1]
     @com.fasterxml.jackson.annotation.JsonIgnore

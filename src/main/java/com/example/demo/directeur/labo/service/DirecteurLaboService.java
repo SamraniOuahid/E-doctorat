@@ -27,5 +27,30 @@ public interface DirecteurLaboService {
     void importSujetsCsv(Long laboId, java.io.InputStream inputStream);
 
     // --- Créer un sujet manuellement ---
+    // --- Créer un sujet manuellement ---
     LaboSujetDto createSujet(Long laboId, LaboSujetDto sujetDto);
+
+    // --- Modifier un sujet ---
+    LaboSujetDto updateSujet(Long laboId, Long sujetId, LaboSujetDto sujetDto);
+
+    // --- Supprimer un sujet ---
+    void deleteSujet(Long laboId, Long sujetId);
+
+
+
+    // --- Liste des professeurs du labo avec stats ---
+    java.util.List<com.example.demo.directeur.labo.dto.ProfessorDto> getProfesseursDuLabo(Long laboId);
+
+    List<com.example.demo.directeur.labo.dto.ProfessorDto> getAllProfesseurs();
+
+    // --- Get laboratory info for authenticated director ---
+    java.util.List<java.util.Map<String, Object>> getFormationsByLabo(Long laboId);
+    
+    java.util.Map<String, Object> getMyLaboInfo(String email);
+
+    // ================== COMMISSIONS ==================
+    List<com.example.demo.directeur.labo.dto.CommissionDto> getCommissionsByLabo(Long laboId);
+    com.example.demo.directeur.labo.dto.CommissionDto createCommission(Long laboId, com.example.demo.directeur.labo.dto.CommissionDto dto);
+    com.example.demo.directeur.labo.dto.CommissionDto updateCommission(Long laboId, Long id, com.example.demo.directeur.labo.dto.CommissionDto dto);
+    void deleteCommission(Long laboId, Long id);
 }

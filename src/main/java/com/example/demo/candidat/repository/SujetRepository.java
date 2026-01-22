@@ -15,6 +15,9 @@ public interface SujetRepository extends JpaRepository<Sujet, Long>, JpaSpecific
     // All subjects of a labo (via professeur.laboratoire.id)
     List<Sujet> findByProfesseur_Laboratoire_Id(Long laboId);
 
+    long countByProfesseur_Id(Long profId);
+    long countByCoDirecteur_Id(Long profId);
+}
     // All subjects of a formation doctorale
     List<Sujet> findByFormationDoctorale_Id(Long formationId);
 
