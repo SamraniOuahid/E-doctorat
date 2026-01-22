@@ -10,13 +10,17 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.example.demo.candidat.repository",
         "com.example.demo.professeur.repository",
         "com.example.demo.directeur.ced.repository",
-        "com.example.demo.security.user"          // (Vérifiez si vos repos sécurité sont bien ici, souvent c'est .security.repository)
+        "com.example.demo.directeur.pole.repository",
+        "com.example.demo.scolarite.repository",    // Added for Scolarite
+        "com.example.demo.security.user"
 })
 @EntityScan(basePackages = {
         "com.example.demo.candidat.model",
         "com.example.demo.professeur.model",
         "com.example.demo.ced.model",
-        "com.example.demo.security.user"          // Pour vos User/Role
+        "com.example.demo.directeur.pole.model",
+        "com.example.demo.scolarite.model",         // Added for Scolarite
+        "com.example.demo.security.user"
 })
 public class DemoApplication {
 

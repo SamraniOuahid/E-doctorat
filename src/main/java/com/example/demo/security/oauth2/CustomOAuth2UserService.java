@@ -71,6 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return roles.contains(Role.PROFESSEUR)
                 || roles.contains(Role.DIRECTEUR_LABO)
                 || roles.contains(Role.DIRECTEUR_CED)
+                || roles.contains(Role.DIRECTEUR_POLE)
                 || roles.contains(Role.SCOLARITE);
     }
 }
