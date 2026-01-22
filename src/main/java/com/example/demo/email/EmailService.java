@@ -35,8 +35,11 @@ public class EmailService {
             helper.setText(htmlContent, true); // true = HTML
 
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erreur lors de l'envoi de l'email", e);
+            System.out.println("INFO - Verification email sent to: " + to);
+        } catch (Exception e) {
+            System.err.println("ERROR - Failed to send verification email to " + to + ": " + e.getMessage());
+            System.out.println("DEBUG - Verification URL (Manual copy): " + confirmationUrl);
+            // We don't rethrow to avoid breaking the registration transaction
         }
     }
 
@@ -61,8 +64,11 @@ public class EmailService {
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erreur lors de l'envoi de l'email de réinitialisation", e);
+            System.out.println("INFO - Password reset email sent to: " + to);
+        } catch (Exception e) {
+            System.err.println("ERROR - Failed to send password reset email to " + to + ": " + e.getMessage());
+            System.out.println("DEBUG - Reset URL (Manual copy): " + resetUrl);
+            // We don't rethrow to avoid breaking the process
         }
     }
 }
