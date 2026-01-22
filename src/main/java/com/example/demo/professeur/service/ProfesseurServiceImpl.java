@@ -17,6 +17,7 @@ public class ProfesseurServiceImpl implements ProfesseurService {
 
     private final SujetRepository sujetRepository;
     private final InscriptionRepository inscriptionRepository;
+    private final com.example.demo.candidat.repository.CandidatChoixRepository choixRepository;
 
     // ================== 1) Mes sujets ==================
 
@@ -31,8 +32,7 @@ public class ProfesseurServiceImpl implements ProfesseurService {
     // Tous les candidats qui ont postulé sur AU MOINS un sujet de ce prof
     @Override
     public List<CandidatForProfDto> getCandidatsByProf(Long profId) {
-        List<Inscription> inscriptions =
-                inscriptionRepository.findByProfesseurId(profId);
+        List<Inscription> inscriptions = inscriptionRepository.findByProfesseurId(profId);
 
         return inscriptions.stream()
                 .map(this::toDto)
@@ -42,8 +42,7 @@ public class ProfesseurServiceImpl implements ProfesseurService {
     // Candidats pour UN sujet précis de ce prof
     @Override
     public List<CandidatForProfDto> getCandidatsBySujet(Long profId, Long sujetId) {
-        List<Inscription> inscriptions =
-                inscriptionRepository.findBySujet_Id(sujetId);
+        List<Inscription> inscriptions = inscriptionRepository.findBySujet_Id(sujetId);
 
         // sécurité : garder seulement les inscriptions du sujet appartenant à ce prof
         inscriptions = inscriptions.stream()
@@ -116,6 +115,10 @@ public class ProfesseurServiceImpl implements ProfesseurService {
 
         dto.setValider(insc.getValider());
         dto.setRemarque(insc.getRemarque());
+
+        // Fetch research proposal path from CandidatChoix
+        choixRepository.findByCandidatIdAndSujet_Id(insc.getCandidat().getId(), insc.getSujet().getId())
+                .ifPresent(choix -> dto.setPathRecherche(choix.getPathRecherche()));
 
         return dto;
     }
