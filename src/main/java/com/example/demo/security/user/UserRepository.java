@@ -16,4 +16,7 @@ public interface UserRepository extends JpaRepository<UserAccount, Long> {
 
     @org.springframework.data.jpa.repository.Query("SELECT COUNT(u) FROM UserAccount u JOIN u.roles r WHERE r = :role")
     long countByRole(Role role);
+
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM UserAccount u JOIN u.roles r WHERE r = :role")
+    java.util.List<UserAccount> findAllByRole(Role role);
 }

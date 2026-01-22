@@ -24,10 +24,18 @@ public class CandidatChoix {
     @Column(name = "candidat_id", nullable = false)
     private Long candidatId;
 
+    public void setCandidatId(Long candidatId) {
+        this.candidatId = candidatId;
+    }
+
     // Relationship: Many choices can point to one Sujet
     @ManyToOne
     @JoinColumn(name = "sujet_id", nullable = false)
     private Sujet sujet;
+
+    public void setSujet(Sujet sujet) {
+        this.sujet = sujet;
+    }
 
     // Optional: It is good practice to know WHEN they applied
     @Column(name = "date_choix")

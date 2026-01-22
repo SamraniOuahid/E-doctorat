@@ -21,6 +21,7 @@
     <properties>
         <!-- You can still run with JDK 21 / 25, but sources are compiled as Java 17 -->
         <java.version>17</java.version>
+        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <dependencies>

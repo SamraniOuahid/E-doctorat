@@ -27,8 +27,8 @@ public class FormationDoctorale {
     private String titre;
 
     // POSTGRESQL FIX
-    @Lob
-    @Column(name = "axeDeRecherche")
+    // POSTGRESQL FIX
+    @Column(name = "axeDeRecherche", columnDefinition = "TEXT")
     private String axeDeRecherche;
 
     @Column(name = "dateAccreditation")
@@ -45,4 +45,22 @@ public class FormationDoctorale {
     @JoinColumn(name = "etablissement_id", referencedColumnName = "idEtablissement", nullable = false)
     @JsonIgnoreProperties("formationsDoctorales")
     private Etablissement etablissement;
+
+    // --- Manual Getters/Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getPathImage() { return pathImage; }
+    public void setPathImage(String pathImage) { this.pathImage = pathImage; }
+    public String getInitiale() { return initiale; }
+    public void setInitiale(String initiale) { this.initiale = initiale; }
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
+    public String getAxeDeRecherche() { return axeDeRecherche; }
+    public void setAxeDeRecherche(String axeDeRecherche) { this.axeDeRecherche = axeDeRecherche; }
+    public Date getDateAccreditation() { return dateAccreditation; }
+    public void setDateAccreditation(Date dateAccreditation) { this.dateAccreditation = dateAccreditation; }
+    public Ced getCed() { return ced; }
+    public void setCed(Ced ced) { this.ced = ced; }
+    public Etablissement getEtablissement() { return etablissement; }
+    public void setEtablissement(Etablissement etablissement) { this.etablissement = etablissement; }
 }

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CommissionRepository extends JpaRepository<Commission, Long> {
     List<Commission> findByLaboratoire_Ced_Id(Long cedId);
+    List<Commission> findByLaboratoire_Id(Long laboId);
 }

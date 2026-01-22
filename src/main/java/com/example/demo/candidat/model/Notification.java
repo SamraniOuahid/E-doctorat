@@ -16,11 +16,21 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    @Column(nullable = false)
+    private String type; // ex: "SUJET_ASSIGNE", "RESULTAT_PUBLIE", etc.
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @ManyToOne
     @JoinColumn(name = "candidat_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Candidat candidat;
+
+    public void setCandidat(Candidat candidat) {
+        this.candidat = candidat;
+    }
 
 
     // Optionnel : si tu crées les entités Commission et Sujet
